@@ -17,6 +17,7 @@ const UserRoute = () => {
       <div className="flex-1 bg-gray-50">
         <Routes>
           <Route path={APP_ROUTES.HOME} element={<Home />} />
+          <Route path={APP_ROUTES.MY_POSTS} element={<Home />} />
           <Route path={APP_ROUTES.PROFILE(":userId")} element={<Profile />} />
           <Route path={APP_ROUTES.SUGGESTION} element={<Suggestion />} />
           

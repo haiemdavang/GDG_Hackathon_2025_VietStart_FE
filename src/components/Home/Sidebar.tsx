@@ -1,6 +1,6 @@
 import { Calendar, Lightbulb, TrendingUp, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryService from '../../service/CategoryService';
 import type { CategoryDto } from '../../types/CategoryType';
 import Category from './Category';
@@ -17,6 +17,7 @@ interface SidebarProps {
 
 export default function Sidebar({ trendingIdeas }: SidebarProps) {
     const navigate = useNavigate();
+    const location = useLocation();
     const [categories, setCategories] = useState<CategoryDto[]>([]);
     const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
@@ -41,28 +42,42 @@ export default function Sidebar({ trendingIdeas }: SidebarProps) {
         posts: `${category.startupCount || 0} bài viết`
     }));
 
+    const isActive = (path: string) => location.pathname === path;
+
     return (
         <div className="bg-white rounded-lg shadow-sm p-4 fixed top-20 overflow-y-auto h-[calc(100vh-5rem)] [&::-webkit-scrollbar]:hidden"
             style={{ width: 'inherit', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <nav className="space-y-2">
-                <a href="#" className="flex items-center space-x-3 px-4 py-3 bg-yellow-400 text-white rounded-lg">
+                <button
+                    onClick={() => navigate('/')}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
+                        }`}
+                >
                     <TrendingUp className="w-5 h-5" />
-                    <span className="font-medium">Trang chủ</span>
-                </a>
-                <a href="#" className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                    <span className={isActive('/') ? 'font-medium' : ''}>Trang chủ</span>
+                </button>
+                <a
+                    href="#"
+                    className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 rounded-lg"
+                >
                     <Users className="w-5 h-5" />
                     <span>Cộng đồng</span>
                 </a>
-                <a href="#" className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                <button
+                    onClick={() => navigate('/my-posts')}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/my-posts') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
+                        }`}
+                >
                     <Calendar className="w-5 h-5" />
-                    <span>Ý tưởng của bạn</span>
-                </a>
+                    <span className={isActive('/my-posts') ? 'font-medium' : ''}>Ý tưởng của bạn</span>
+                </button>
                 <button
                     onClick={() => navigate('/suggestion')}
-                    className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 rounded-lg w-full text-left"
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/suggestion') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
+                        }`}
                 >
                     <Lightbulb className="w-5 h-5" />
-                    <span>Đề xuất dự án phù hợp</span>
+                    <span className={isActive('/suggestion') ? 'font-medium' : ''}>Đề xuất dự án phù hợp</span>
                 </button>
             </nav>
 

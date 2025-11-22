@@ -49,6 +49,7 @@ export const APP_ROUTES = {
   PROFILE: (userId: string) => `/profile/${userId}`,
   EDIT_PROFILE: '/profile/edit',
   SUGGESTION: '/suggestion',
+  MY_POSTS: '/my-posts',
 
   ADMIN: {
     BASE: '/admin/*',
