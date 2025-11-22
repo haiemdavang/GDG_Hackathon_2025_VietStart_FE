@@ -1,12 +1,12 @@
 // import { useState } from 'react';
 import {
   Button,
-  Checkbox,
   Divider,
   Group,
   MultiSelect,
   PasswordInput,
   Stack,
+  Stepper,
   Text,
   TextInput,
   Title,
@@ -21,17 +21,8 @@ import showErrorNotification from '../Toast/NotificationError';
 import showSuccessNotification from '../Toast/NotificationSuccess';
 import type { RegisterRequest } from '../types/UserType';
 import { validateAgreeTerms, validateConfirmPassword, validateEmail, validatePassword } from '../untils/ValidateInput';
-
-interface SignUpFormValues {
-  fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  skills: string[];
-  rolesInStartup: string[];
-  categoryInvests: string[];
-  agreeTerms: boolean;
-}
+import { SignUpStep1 } from './SignUpStep1';
+import { SignUpStep2 } from './SignUpStep2';
 
 const SKILLS_OPTIONS = [
   { value: 'react', label: 'React' },
@@ -70,8 +61,20 @@ const CATEGORY_OPTIONS = [
   { value: 'social', label: 'Social Network' },
 ];
 
+interface SignUpFormValues {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  skills: string[];
+  rolesInStartup: string[];
+  categoryInvests: string[];
+  agreeTerms: boolean;
+}
+
 export function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
+  const [active, setActive] = useState(0);
   const navigate = useNavigate();
 
   const form = useForm<SignUpFormValues>({
@@ -86,16 +89,25 @@ export function SignUp() {
       agreeTerms: false,
     },
     validate: {
-      fullName: (value) => (value ? null : 'Họ tên là bắt buộc'),
-      email: (value) => validateEmail(value),
-      password: (value) => validatePassword(value),
-      confirmPassword: (value, values) => validateConfirmPassword(values.password, value),
-      skills: (value) => (value.length > 0 ? null : 'Vui lòng chọn ít nhất 1 kỹ năng'),
-      rolesInStartup: (value) => (value.length > 0 ? null : 'Vui lòng chọn ít nhất 1 vai trò'),
-      categoryInvests: (value) => (value.length > 0 ? null : 'Vui lòng chọn ít nhất 1 lĩnh vực'),
-      agreeTerms: (value) => validateAgreeTerms(value),
+      fullName: (value) => (active === 0 && value ? null : active === 0 ? 'Họ tên là bắt buộc' : null),
+      email: (value) => (active === 0 ? validateEmail(value) : null),
+      password: (value) => (active === 0 ? validatePassword(value) : null),
+      confirmPassword: (value, values) => (active === 0 ? validateConfirmPassword(values.password, value) : null),
+      skills: (value) => (active === 1 && value.length > 0 ? null : active === 1 ? 'Vui lòng chọn ít nhất 1 kỹ năng' : null),
+      rolesInStartup: (value) => (active === 1 && value.length > 0 ? null : active === 1 ? 'Vui lòng chọn ít nhất 1 vai trò' : null),
+      categoryInvests: (value) => (active === 1 && value.length > 0 ? null : active === 1 ? 'Vui lòng chọn ít nhất 1 lĩnh vực' : null),
+      agreeTerms: (value) => (active === 1 ? validateAgreeTerms(value) : null),
     },
   });
+
+  const nextStep = () => {
+    const validation = form.validate();
+    if (!validation.hasErrors) {
+      setActive((current) => (current < 1 ? current + 1 : current));
+    }
+  };
+
+  const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
 
   const handleSubmit = async (values: SignUpFormValues) => {
     const registerData: RegisterRequest = {
@@ -113,13 +125,8 @@ export function SignUp() {
       const response = await AuthService.register(registerData);
 
       if (response.status === 200 || response.status === 201) {
-        showSuccessNotification(
-          'Đăng ký thành công!',
-          'Đăng nhập để trải nghiệm nhé.'
-        );
+        showSuccessNotification('Đăng ký thành công!', 'Đăng nhập để trải nghiệm nhé.');
 
-  
-        // Navigate to login or home page
         setTimeout(() => {
           navigate('/login');
         }, 2000);
@@ -158,110 +165,62 @@ export function SignUp() {
           Đăng ký
         </Title>
 
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stack gap="md">
-            <TextInput
-              label="Họ và tên"
-              placeholder="Nhập tên đây nha thượng đế"
-              required
-              {...form.getInputProps('fullName')}
-              size="md"
-            />
+        <Stepper active={active} onStepClick={setActive} mb="xl">
+          <Stepper.Step label="Bước 1" description="Thông tin tài khoản">
+            <SignUpStep1 form={form} />
+          </Stepper.Step>
 
-            <TextInput
-              label="Email"
-              placeholder="email nè"
-              required
-              {...form.getInputProps('email')}
-              size="md"
-            />
+          <Stepper.Step label="Bước 2" description="Thông tin cá nhân">
+            <SignUpStep2 form={form} />
+          </Stepper.Step>
+        </Stepper>
 
-            <PasswordInput
-              label="Mật khẩu"
-              placeholder="Ngày sinh người yêu cũ ha -.-"
-              required
-              {...form.getInputProps('password')}
-              size="md"
-            />
-
-            <PasswordInput
-              label="Xác nhận mật khẩu"
-              placeholder="Nhập lại mật khẩu của bạn"
-              required
-              {...form.getInputProps('confirmPassword')}
-              size="md"
-            />
-
-            <MultiSelect
-              label="Kỹ năng"
-              placeholder="Chọn kỹ năng của bạn"
-              data={SKILLS_OPTIONS}
-              searchable
-              required
-              {...form.getInputProps('skills')}
-              size="md"
-              maxDropdownHeight={200}
-            />
-
-            <MultiSelect
-              label="Vai trò trong Startup"
-              placeholder="Bạn quan tâm đến vai trò nào?"
-              data={ROLES_OPTIONS}
-              searchable
-              required
-              {...form.getInputProps('rolesInStartup')}
-              size="md"
-              maxDropdownHeight={200}
-            />
-
-            <MultiSelect
-              label="Lĩnh vực quan tâm"
-              placeholder="Chọn lĩnh vực đầu tư/làm việc"
-              data={CATEGORY_OPTIONS}
-              searchable
-              required
-              {...form.getInputProps('categoryInvests')}
-              size="md"
-              maxDropdownHeight={200}
-            />
-
-            <Checkbox
-              label="Tôi đồng ý với điều khoản sử dụng và chính sách bảo mật"
-              {...form.getInputProps('agreeTerms', { type: 'checkbox' })}
-            />
-
+        <Group justify="space-between" mt="xl">
+          {active > 0 && (
+            <Button variant="default" onClick={prevStep}>
+              Quay lại
+            </Button>
+          )}
+          {active === 0 && (
+            <Button onClick={nextStep} style={{ marginLeft: 'auto' }}>
+              Tiếp theo
+            </Button>
+          )}
+          {active === 1 && (
             <Button
-              fullWidth
-              type="submit"
+              onClick={() => form.onSubmit(handleSubmit)()}
               loading={isLoading}
-              size="md"
               disabled={isLoading || !form.values.agreeTerms}
             >
               Đăng ký
             </Button>
-          </Stack>
-        </form>
-
-        <Divider label="Hoặc đăng ký với" labelPosition="center" my="lg" />
-
-        <Group grow>
-          <Button
-            leftSection={<FaGoogle size={16} />}
-            variant="outline"
-            className="border-gray-300"
-            onClick={handleGoogleLogin}
-          >
-            Google
-          </Button>
-          <Button
-            leftSection={<FaFacebook size={16} />}
-            variant="outline"
-            className="border-gray-300"
-            onClick={() => showSuccessNotification('Chức năng đang phát triển', 'Đăng ký bằng Facebook sẽ sớm được ra mắt!')}
-          >
-            Facebook
-          </Button>
+          )}
         </Group>
+
+        {active === 0 && (
+          <>
+            <Divider label="Hoặc đăng ký với" labelPosition="center" my="lg" />
+
+            <Group grow>
+              <Button
+                leftSection={<FaGoogle size={16} />}
+                variant="outline"
+                className="border-gray-300"
+                onClick={handleGoogleLogin}
+              >
+                Google
+              </Button>
+              <Button
+                leftSection={<FaFacebook size={16} />}
+                variant="outline"
+                className="border-gray-300"
+                onClick={() => showSuccessNotification('Chức năng đang phát triển', 'Đăng ký bằng Facebook sẽ sớm được ra mắt!')}
+              >
+                Facebook
+              </Button>
+            </Group>
+          </>
+        )}
 
         <Text className="text-center text-gray-600 mt-4">
           Đã có tài khoản?{' '}
