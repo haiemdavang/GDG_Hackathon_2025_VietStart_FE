@@ -1,111 +1,187 @@
-import { Badge, Button, Card, Collapse, Group, Stack, Text, Title } from '@mantine/core';
-import { ChevronDown, Mail, MapPin } from 'lucide-react';
-import { useState } from 'react';
-import type { MemberProfile } from '../../data/ProfileData';
+import { Avatar, Badge, Card, Group, Stack, Text, Title, Box } from '@mantine/core';
+import { Target, User } from 'lucide-react';
+import type { UserSuggestionDto } from '../../types/StartupType';
 
 interface CartMemberProps {
-    member: MemberProfile;
-    swipeDirection: 'left' | 'right' | null;
+    member: UserSuggestionDto;
+    swipeDirection?: 'left' | 'right' | null;
 }
 
-export default function CartMember({
-    member,
-    swipeDirection
-}: CartMemberProps) {
-    const [showDetails, setShowDetails] = useState(false);
+export default function CartMember({ member, swipeDirection }: CartMemberProps) {
+    const getMatchScoreColor = (score: number) => {
+        if (score >= 80) return 'green';
+        if (score >= 60) return 'yellow';
+        if (score >= 40) return 'orange';
+        return 'red';
+    };
+
+    const parseSkills = (skills: string | null): string[] => {
+        if (!skills) return [];
+        try {
+            return skills.split(',').map(s => s.trim()).filter(s => s);
+        } catch {
+            return [];
+        }
+    };
+
+    const parseRoles = (roles: string | null): string[] => {
+        if (!roles) return [];
+        try {
+            return roles.split(',').map(r => r.trim()).filter(r => r);
+        } catch {
+            return [];
+        }
+    };
+
+    const parseCategories = (categories: string | null): string[] => {
+        if (!categories) return [];
+        try {
+            return categories.split(',').map(c => c.trim()).filter(c => c);
+        } catch {
+            return [];
+        }
+    };
 
     return (
         <Card
             shadow="xl"
-            padding="lg"
-            radius="xl"
+            padding={0}
+            radius="lg"
             withBorder
-            className={`w-full h-full ${swipeDirection === 'left' ? 'transition-all duration-300 translate-x-[-150%] opacity-0' : ''
-                } ${swipeDirection === 'right' ? 'transition-all duration-300 translate-x-[150%] opacity-0' : ''}`}
+            w="100%"
+            maw={450}
+            style={{
+                transition: 'all 0.3s',
+                transform: swipeDirection === 'left' 
+                    ? 'translateX(-100%)' 
+                    : swipeDirection === 'right' 
+                    ? 'translateX(100%)' 
+                    : 'translateX(0)',
+                opacity: swipeDirection ? 0 : 1,
+                overflow: 'hidden',
+                position: 'relative'
+            }}
         >
-            {/* Background Section with Circular Avatar */}
-            <Card.Section className="relative h-96 bg-gradient-to-br from-yellow-100 to-yellow-200">
-                <img
-                    src={member.background}
-                    alt="Background"
-                    className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+            {/* Match Score Badge - Top Right */}
+            <Badge
+                size="lg"
+                radius="md"
+                color={getMatchScoreColor(member.matchScore)}
+                leftSection={<Target size={16} />}
+                style={{
+                    position: 'absolute',
+                    top: 16,
+                    right: 16,
+                    zIndex: 10,
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                }}
+            >
+                {member.matchScore.toFixed(1)}% Match
+            </Badge>
 
-                {/* Circular Avatar - Bottom Left */}
-                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
-                    <img
+            {/* Background behind avatar - top half */}
+            <Box
+                style={{
+                    background: 'linear-gradient(135deg, #f2dc1d 0%, #e6c91a 100%)',
+                    height: '100px',
+                    width: '100%',
+                    position: 'absolute',
+                }}
+            />
+            <div className='min-h-[50px]'></div>
+
+            <Stack gap="md" px="xl"  style={{ minHeight: '550px' }}>
+                {/* Avatar */}
+                <Box pos="relative" style={{ alignSelf: 'flex-start' }}>
+                    <Avatar
                         src={member.avatar}
+                        size={100}
+                        radius="xl"
                         alt={member.fullName}
-                        className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white shadow-2xl"
-                    />
-                </div>
+                        pos="relative"
+                        style={{
+                            borderRadius: '50%',
+                            border: '4px solid white',
+                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                            backgroundColor: '#f2dc1d'
+                        }}
+                    >
+                        <User size={50} color="white" />
+                    </Avatar>
+                </Box>
 
-                <div className="absolute bottom-0 left-32 sm:left-40 right-0 p-4 sm:p-6">
-                    <Title order={2} c="white" mb={4}>
-                        {member.fullName}
-                    </Title>
-                    <Text size="lg" c="yellow.3" fw={500}>
-                        {member.role}
-                    </Text>
-                </div>
-            </Card.Section>
+                {/* Name */}
+                <Title order={3} style={{ marginTop: '-8px' }}>{member.fullName}</Title>
 
-            {/* Info Section */}
-            <Stack gap="md" mt="md" mb={"xl"}>
                 {/* Bio */}
-                <Text size="sm" c="dimmed">
-                    {member.bio}
-                </Text>
+                {member.bio && (
+                    <Text size="sm" c="dimmed" lineClamp={3} lh={1.6}>
+                        {member.bio}
+                    </Text>
+                )}
 
                 {/* Skills */}
-                <div>
-                    <Text size="xs" fw={600} c="dimmed" mb={8}>
-                        Kỹ năng
-                    </Text>
-                    <Group gap="xs">
-                        {member.skills.map((skill, index) => (
-                            <Badge key={index} variant="light" color="blue" size="md">
-                                {skill}
-                            </Badge>
-                        ))}
-                    </Group>
-                </div>
-
-                {/* Toggle Details Button */}
-                <Button
-                    variant="subtle"
-                    color="yellow"
-                    fullWidth
-                    onClick={() => setShowDetails(!showDetails)}
-                    rightSection={
-                        <ChevronDown className={`w-4 h-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
-                    }
-                >
-                    {showDetails ? 'Ẩn chi tiết' : 'Xem chi tiết'}
-                </Button>
-
-                {/* Collapsible Details */}
-                <Collapse in={showDetails}>
-                    <Stack gap="sm" pt="sm" pb={"lg"} className="border-t border-gray-200">
-                        <Group gap="xs">
-                            <MapPin className="w-4 h-4 text-yellow-500" />
-                            <Text size="sm">{member.location}</Text>
-                        </Group>
-                        <Group gap="xs" align="flex-start">
-                            <Mail className="w-4 h-4 text-yellow-500 mt-1" />
-                            <Text size="sm" className="break-all">
-                                {member.email}
-                            </Text>
-                        </Group>
-                        <Group gap="xs">
-                            <Text size="sm" fw={500}>
-                                Kinh nghiệm:
-                            </Text>
-                            <Text size="sm">{member.experience}</Text>
+                {member.skills && parseSkills(member.skills).length > 0 && (
+                    <Stack gap={8} w="100%">
+                        <Text size="sm" fw={600} c="dimmed" >Kỹ năng</Text>
+                        <Group gap={8}>
+                            {parseSkills(member.skills).slice(0, 6).map((skill, index) => (
+                                <Badge
+                                    key={index}
+                                    variant="light"
+                                    color="blue"
+                                    size="lg"
+                                    radius="md"
+                                    style={{ textTransform: 'none' }}
+                                >
+                                    {skill}
+                                </Badge>
+                            ))}
                         </Group>
                     </Stack>
-                </Collapse>
+                )}
+
+                {/* Roles */}
+                {member.rolesInStartup && parseRoles(member.rolesInStartup).length > 0 && (
+                    <Stack gap={8} w="100%">
+                        <Text size="sm" fw={600} c="dimmed">Vai trò mong muốn</Text>
+                        <Group gap={8}>
+                            {parseRoles(member.rolesInStartup).map((role, index) => (
+                                <Badge
+                                    key={index}
+                                    variant="light"
+                                    color="grape"
+                                    size="lg"
+                                    radius="md"
+                                    style={{ textTransform: 'none' }}
+                                >
+                                    {role}
+                                </Badge>
+                            ))}
+                        </Group>
+                    </Stack>
+                )}
+
+                {/* Category Invests */}
+                {member.categoryInvests && parseCategories(member.categoryInvests).length > 0 && (
+                    <Stack gap={8} w="100%">
+                        <Text size="sm" fw={600} c="dimmed">Lĩnh vực đầu tư</Text>
+                        <Group gap={8}>
+                            {parseCategories(member.categoryInvests).map((category, index) => (
+                                <Badge
+                                    key={index}
+                                    variant="light"
+                                    color="teal"
+                                    size="lg"
+                                    radius="md"
+                                    style={{ textTransform: 'none' }}
+                                >
+                                    {category}
+                                </Badge>
+                            ))}
+                        </Group>
+                    </Stack>
+                )}
             </Stack>
         </Card>
     );

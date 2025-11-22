@@ -1,10 +1,14 @@
 import type { AxiosResponse } from 'axios';
 import type {
     CreateStartUpDto,
+    GroupedSuggestionsResponse,
     PaginatedStartupsResponse,
+    RecalculateEmbeddingsResponse,
     StartUpDetailDto,
     StartUpDto,
-    UpdateStartUpDto
+    SuggestUsersResponse,
+    UpdateStartUpDto,
+    UserSuggestionDto
 } from '../types/StartupType';
 import AxiosService from './AxiosService';
 
@@ -122,6 +126,55 @@ export const StartupService = {
             throw new Error('Người dùng chưa đăng nhập');
         }
         return await StartupService.getUserStartups(userId);
+    },
+
+    // Get suggested users for startup
+    getSuggestedUsers: async (startupId: number): Promise<AxiosResponse<SuggestUsersResponse>> => {
+        try {
+            const response = await AxiosService.get<SuggestUsersResponse>(
+                `/api/Startups/${startupId}/suggest-users`
+            );
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                throw new Error('Startup không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // Recalculate startup embeddings
+    recalculateEmbeddings: async (startupId: number): Promise<AxiosResponse<RecalculateEmbeddingsResponse>> => {
+        try {
+            const response = await AxiosService.post<RecalculateEmbeddingsResponse>(
+                `/api/Startups/${startupId}/recalculate-embeddings`
+            );
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                throw new Error('Startup không tồn tại');
+            }
+            if (error.response?.status === 500) {
+                const message = error.response.data?.Message || 'Lỗi khi tính toán embeddings';
+                throw new Error(message);
+            }
+            throw error;
+        }
+    },
+
+    // Get grouped suggested users for startup
+    getSuggestedUsersGrouped: async (startupId: number): Promise<AxiosResponse<GroupedSuggestionsResponse>> => {
+        try {
+            const response = await AxiosService.get<GroupedSuggestionsResponse>(
+                `/api/Startups/${startupId}/suggest-users-grouped`
+            );
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                throw new Error('Startup không tồn tại');
+            }
+            throw error;
+        }
     },
 };
 

@@ -6,6 +6,7 @@ import type {
     UpdateTeamStartUpDto
 } from '../types/StartupPositionType';
 import AxiosService from './AxiosService';
+import type { CreateTeamStartUpDtoType } from '../types/StartupType';
 
 interface PaginatedTeamStartUpsResponse {
     data: TeamStartUpDto[];
@@ -160,6 +161,29 @@ export const TeamStartupService = {
             throw error;
         }
     },
+
+    inviteStartUp: async (startUpId: number, userId: string): Promise<AxiosResponse> => {
+        try {
+            const data: CreateTeamStartUpDtoType = {
+                startUpId,
+                userId,
+                status: 'Pending'
+            };
+            
+            const response = await AxiosService.post('/api/TeamStartUps/invite', data);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể gửi lời mời';
+                throw new Error(message);
+            }
+            if (error.response?.status === 403) {
+                throw new Error('Bạn không có quyền gửi lời mời cho startup này');
+            }
+            throw error;
+        }
+    },
+
 };
 
 export default TeamStartupService;
