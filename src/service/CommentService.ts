@@ -46,7 +46,7 @@ export const CommentService = {
     // Update a comment
     updateComment: async (id: number, data: UpdateCommentDto): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/Comments/${id}`, data);
+            const response = await AxiosService.post(`/api/Comments/${id}/update`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -66,7 +66,7 @@ export const CommentService = {
     // Delete a comment (soft delete)
     deleteComment: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/Comments/${id}`);
+            const response = await AxiosService.post(`/api/Comments/${id}/delete`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 403) {

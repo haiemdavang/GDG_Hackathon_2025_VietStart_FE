@@ -59,7 +59,7 @@ export const ShareService = {
         data: UpdateShareDto
     ): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/Shares/${userId}/${startupId}`, data);
+            const response = await AxiosService.post(`/api/Shares/${userId}/${startupId}/update`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -91,7 +91,7 @@ export const ShareService = {
     // Delete a share
     deleteShare: async (userId: string, startupId: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/Shares/${userId}/${startupId}`);
+            const response = await AxiosService.post(`/api/Shares/${userId}/${startupId}/delete`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 403) {
