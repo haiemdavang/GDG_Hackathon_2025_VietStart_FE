@@ -109,7 +109,7 @@ export function SignUp() {
 
   return (
     <motion.div
-      className="w-1/2 bg-white flex items-center justify-center p-8 overflow-y-auto"
+      className="w-full md:w-1/2 bg-white flex items-center justify-center p-8 overflow-y-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
