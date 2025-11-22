@@ -1,0 +1,216 @@
+// import { useState } from 'react';
+import {
+  Button,
+  Checkbox,
+  Divider,
+  Group,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { FaFacebook, FaGoogle } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthService from '../service/AuthService';
+import showErrorNotification from '../Toast/NotificationError';
+import showSuccessNotification from '../Toast/NotificationSuccess';
+import type { RegisterRequest } from '../types/UserType';
+import { validateAgreeTerms, validateConfirmPassword, validateEmail, validatePassword } from '../untils/ValidateInput';
+
+interface SignUpFormValues {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeTerms: boolean;
+}
+
+export function SignUp() {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const form = useForm<SignUpFormValues>({
+    initialValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      agreeTerms: false,
+    },
+    validate: {
+      fullName: (value) => (value ? null : 'Họ tên là bắt buộc'),
+      email: (value) => {
+        return validateEmail(value);
+      },
+      password: (value) => {
+        return validatePassword(value);
+      },
+      confirmPassword: (value, values) => {
+        return validateConfirmPassword(values.password, value);
+      },
+      agreeTerms: (value) => {
+        return validateAgreeTerms(value);
+      },
+    },
+  });
+
+  const handleSubmit = async (values: SignUpFormValues) => {
+    const registerData: RegisterRequest = {
+      fullName: values.fullName,
+      email: values.email,
+      password: values.password,
+      confirmPassword: values.confirmPassword,
+    };
+
+    setIsLoading(true);
+    try {
+      const response = await AuthService.register(registerData);
+
+      if (response.status === 200 || response.status === 201) {
+        showSuccessNotification(
+          'Đăng ký thành công!',
+          'Đăng nhập để trải nghiệm nhé.'
+        );
+
+        // Optionally store tokens if returned
+        if (response.data.accessToken) {
+          localStorage.setItem('accessToken', response.data.accessToken);
+        }
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+
+        // Navigate to login or home page
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+
+      const errorMessage = error.response?.data?.message
+        || error.response?.data?.errors?.[0]
+        || 'Đã có lỗi xảy ra. Vui lòng thử lại!';
+
+      showErrorNotification('Đăng ký thất bại', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    showErrorNotification('Chức năng đang phát triển', 'Đăng ký bằng Google sẽ sớm được ra mắt!');
+  }
+  return (
+    <motion.div
+      className="w-1/2 bg-white flex items-center justify-center p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Title order={1} className="text-3xl font-bold mb-6 text-center text-slate-800">
+          Đăng ký
+        </Title>
+
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Stack gap="md">
+            <TextInput
+              label="Họ và tên"
+              placeholder="Nhập tên đây nha thượng đế"
+              required
+              value={form.values.fullName}
+              onChange={(event) => form.setFieldValue('fullName', event.currentTarget.value)}
+              error={form.errors.fullName}
+              size="md"
+            />
+
+            <TextInput
+              label="Email"
+              placeholder="email nè"
+              required
+              value={form.values.email}
+              onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
+              error={form.errors.email}
+              size="md"
+            />
+
+            <PasswordInput
+              label="Mật khẩu"
+              placeholder="Ngày sinh người yêu cũ ha -.-"
+              required
+              value={form.values.password}
+              onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
+              error={form.errors.password}
+              size="md"
+            />
+
+            <PasswordInput
+              label="Xác nhận mật khẩu"
+              placeholder="Nhang lại mật khẩu của bạn"
+              required
+              value={form.values.confirmPassword}
+              onChange={(event) => form.setFieldValue('confirmPassword', event.currentTarget.value)}
+              error={form.errors.confirmPassword}
+              size="md"
+            />
+
+            <Checkbox
+              label="Tôi đồng ý với điều khoản sử dụng và chính sách bảo mật"
+              checked={form.values.agreeTerms}
+              onChange={(event) => form.setFieldValue('agreeTerms', event.currentTarget.checked)}
+              error={form.errors.agreeTerms}
+            />
+
+            <Button
+              fullWidth
+              type="submit"
+              loading={isLoading}
+              size="md"
+              disabled={isLoading || !form.values.agreeTerms}
+            >
+              Đăng ký
+            </Button>
+          </Stack>
+        </form>
+
+        <Divider label="Hoặc đăng ký với" labelPosition="center" my="lg" />
+
+        <Group grow>
+          <Button
+            leftSection={<FaGoogle size={16} />}
+            variant="outline"
+            className="border-gray-300"
+            onClick={() => handleGoogleLogin()}
+          >
+            Google
+          </Button>
+          <Button
+            leftSection={<FaFacebook size={16} />}
+            variant="outline"
+            className="border-gray-300"
+            onClick={() => showSuccessNotification('Chức năng đang phát triển', 'Đăng ký bằng Facebook sẽ sớm được ra mắt!')}
+          >
+            Facebook
+          </Button>
+        </Group>
+
+        <Text className="text-center  text-gray-600">
+          Đã có tài khoản?{' '}
+          <Link to="/login" className="text-primary font-medium hover:underline">
+            Đăng nhập
+          </Link>
+        </Text>
+      </motion.div>
+    </motion.div>
+  );
+}
