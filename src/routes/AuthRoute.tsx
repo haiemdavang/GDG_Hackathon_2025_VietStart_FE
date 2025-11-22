@@ -14,9 +14,9 @@ export function AuthoPage() {
         onClick={() => navigate("/")}
         className='m-4 inline-block absolute top-5 left-5 cursor-pointer z-50'
       >
-        <Button leftSection={<FiArrowLeft size={20} />} variant='light'>
+        {location.pathname === "/login" ? <></> : <Button leftSection={<FiArrowLeft size={20} />} variant='light'>
           Quay lại
-        </Button>
+        </Button>}  
       </span>
 
       <div className={`w-[100vw] h-[100vh] flex [&>*]:flex-shrink-0 duration-1000 transition-all `}>
