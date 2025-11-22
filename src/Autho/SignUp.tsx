@@ -120,7 +120,7 @@ export function SignUp() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Title order={1} className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center text-slate-800">
+        <Title order={1} className="text-2xl md:text-3xl font-bold !mb-5 md:!mb-6 text-center text-slate-800">
           Đăng ký
         </Title>
 
