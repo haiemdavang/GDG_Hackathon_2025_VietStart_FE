@@ -9,10 +9,10 @@ import '@mantine/notifications/styles.css';
 
 import './App.css';
 import { APP_ROUTES } from './constant';
-// import { store } from './store/store';
+import { store } from './store/store';
 
 const AuthoPage = lazy(() => import('./routes/AuthRoute'));
-// const UserRoute = lazy(() => import('./routes/UserRoute'));
+const UserRoute = lazy(() => import('./routes/UserRoute'));
 
 function App() {
   const theme = createTheme({
@@ -51,7 +51,7 @@ function App() {
 
 
   return (
-    // <Provider  store={undefined /* store */}>
+    <Provider store={store}>
       <MantineProvider theme={theme}>
         <Notifications position="bottom-right" zIndex={1000} />
         <BrowserRouter>
@@ -60,13 +60,13 @@ function App() {
               <Routes>
                 <Route path={APP_ROUTES.LOGIN} element={<AuthoPage />} />
                 <Route path={APP_ROUTES.REGISTER} element={<AuthoPage />} />
-                {/* <Route path="/*" element={<UserRoute />} /> */}
+                <Route path="/*" element={<UserRoute />} />
               </Routes>
             </main>
           </div>
         </BrowserRouter>
       </MantineProvider>
-    // </Provider>
+    </Provider>
   );
 }
 

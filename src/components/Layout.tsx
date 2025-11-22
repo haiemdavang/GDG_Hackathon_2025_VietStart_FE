@@ -1,7 +1,6 @@
 import { Bell, ChevronDown, Mail, Search } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from "../assets/logo.png";
 import unknownAvatar from "../assets/unknown_avatar.jpg";
 import { APP_ROUTES } from '../constant';
 import AuthService from '../service/AuthService';
@@ -77,7 +76,7 @@ export default function Layout({ children }: LayoutProps) {
                 className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
               >
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                  <img src={logo} className="w-5 h-5" alt="VietStart Logo" />
+                  <img src='/logo.png' className="w-5 h-5" alt="VietStart Logo" />
                 </div>
                 <span className="text-xl font-bold">VietStart</span>
               </button>
