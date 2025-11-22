@@ -29,7 +29,7 @@ export const UserService = {
     // Update user profile
     updateUserProfile: async (userId: string, data: ProfileRequest): Promise<AxiosResponse<ProfileData>> => {
         try {
-            const response = await AxiosService.put<ProfileData>(`/api/Users/${userId}`, data);
+            const response = await AxiosService.post<ProfileData>(`/api/Users/${userId}/update`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -74,7 +74,7 @@ export const UserService = {
 
     // Delete user account
     deleteUserAccount: async (userId: string): Promise<AxiosResponse> => {
-        return await AxiosService.delete(`/api/User/${userId}`);
+        return await AxiosService.post(`/api/User/${userId}/delete`);
     },
 
     // Get user statistics

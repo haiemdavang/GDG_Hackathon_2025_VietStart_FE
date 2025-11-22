@@ -167,16 +167,8 @@ class AxiosService {
         return this.axiosInstance.post<T>(url, data, config);
     }
 
-    public put<T = any>(url: string, data?: any, config?: any): Promise<AxiosResponse<T>> {
-        return this.axiosInstance.put<T>(url, data, config);
-    }
-
     public patch<T = any>(url: string, data?: any, config?: any): Promise<AxiosResponse<T>> {
         return this.axiosInstance.patch<T>(url, data, config);
-    }
-
-    public delete<T = any>(url: string, config?: any): Promise<AxiosResponse<T>> {
-        return this.axiosInstance.delete<T>(url, config);
     }
 
     // Public HTTP methods without authentication

@@ -107,7 +107,7 @@ export const StartupService = {
     // Update startup
     updateStartup: async (id: number, data: UpdateStartUpDto): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/Startups/${id}`, data);
+            const response = await AxiosService.post(`/api/Startups/${id}/update`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -127,7 +127,7 @@ export const StartupService = {
     // Delete startup
     deleteStartup: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/Startups/${id}`);
+            const response = await AxiosService.post(`/api/Startups/${id}/delete`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 403) {

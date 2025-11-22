@@ -109,7 +109,7 @@ export const TeamStartupService = {
     // Update team startup
     updateTeamStartUp: async (id: number, data: UpdateTeamStartUpDto): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/TeamStartUps/${id}`, data);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/update`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -129,7 +129,7 @@ export const TeamStartupService = {
     // Delete team startup
     deleteTeamStartUp: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/TeamStartUps/${id}`);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/delete`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -145,7 +145,7 @@ export const TeamStartupService = {
     // Update team startup status (Approve/Reject application)
     updateTeamStartUpStatus: async (id: number, status: string): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/TeamStartUps/${id}/status`, JSON.stringify(status), {
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/status`, JSON.stringify(status), {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -188,10 +188,10 @@ export const TeamStartupService = {
 
     // DEPRECATED: Use getMyInvitations (received-invites endpoint) instead
 
-    // PUT: api/teamstartups/{id}/accept-invite - Accept invitation (receiver)
+    // POST: api/teamstartups/{id}/accept-invite - Accept invitation (receiver)
     acceptInvitation: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/TeamStartUps/${id}/accept-invite`);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/accept-invite`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -205,10 +205,10 @@ export const TeamStartupService = {
         }
     },
 
-    // PUT: api/teamstartups/{id}/reject-invite - Reject invitation (receiver)
+    // POST: api/teamstartups/{id}/reject-invite - Reject invitation (receiver)
     rejectInvitation: async (id: number, reason?: string): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/TeamStartUps/${id}/reject-invite`, 
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/reject-invite`, 
                 reason ? { reason } : {}
             );
             return response;
@@ -224,10 +224,10 @@ export const TeamStartupService = {
         }
     },
 
-    // DELETE: api/teamstartups/{id}/cancel-request - Cancel request
+    // POST: api/teamstartups/{id}/cancel-request - Cancel request
     cancelRequest: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/TeamStartUps/${id}/cancel-request`);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/cancel-request`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -241,11 +241,11 @@ export const TeamStartupService = {
         }
     },
 
-    // PUT: api/teamstartups/{id}/accept-invite - Change status to Dealing (Accepted by invitee)
+    // POST: api/teamstartups/{id}/accept-invite - Change status to Dealing (Accepted by invitee)
     moveToDealing: async (id: number): Promise<AxiosResponse> => {
         try {
             // Sử dụng API accept-invite để chuyển sang Dealing
-            const response = await AxiosService.put(`/api/TeamStartUps/${id}/accept-invite`);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/accept-invite`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -259,10 +259,10 @@ export const TeamStartupService = {
         }
     },
 
-    // PUT: api/teamstartups/{id}/confirm-success - Mark as Success (Owner finalizes)
+    // POST: api/teamstartups/{id}/confirm-success - Mark as Success (Owner finalizes)
     markAsSuccess: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/TeamStartUps/${id}/confirm-success`);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/confirm-success`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -327,10 +327,10 @@ export const TeamStartupService = {
         }
     },
 
-    // DELETE: api/teamstartups/{id}/cancel-invite - Cancel invitation (owner, when Pending)
+    // POST: api/teamstartups/{id}/cancel-invite - Cancel invitation (owner, when Pending)
     cancelInvite: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/TeamStartUps/${id}/cancel-invite`);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/cancel-invite`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -344,10 +344,10 @@ export const TeamStartupService = {
         }
     },
 
-    // PUT: api/teamstartups/{id}/cancel-dealing - Cancel dealing (owner, when Dealing)
+    // POST: api/teamstartups/{id}/cancel-dealing - Cancel dealing (owner, when Dealing)
     cancelDealing: async (id: number, reason?: string): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/TeamStartUps/${id}/cancel-dealing`, 
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/cancel-dealing`, 
                 reason ? { reason } : {}
             );
             return response;
@@ -408,10 +408,10 @@ export const TeamStartupService = {
         }
     },
 
-    // DELETE: api/teamstartups/{id}/remove-member - Remove member (owner)
+    // POST: api/teamstartups/{id}/remove-member - Remove member (owner)
     removeMember: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/TeamStartUps/${id}/remove-member`);
+            const response = await AxiosService.post(`/api/TeamStartUps/${id}/remove-member`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
