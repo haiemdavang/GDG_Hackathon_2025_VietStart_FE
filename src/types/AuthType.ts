@@ -1,6 +1,3 @@
-import type { UserDto } from "./UserType";
-
-
 
 export interface LoginRequest {
   username: string;

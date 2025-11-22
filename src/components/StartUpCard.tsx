@@ -9,7 +9,7 @@ import type { StartUpDto } from '../types/StartupType';
 import { formatTimeAgo } from '../untils/Helper';
 import Comment from './Comment';
 import type { CommentData } from './CommentItem';
-import ModalApplyStartup, { type ApplyStartupFormData } from './ModalApplyStartup';
+import ModalApplyStartup from './ModalApplyStartup';
 import ModalShare from './ModalShare';
 import StartUpCardContent from './StartUpCardContent';
 import StartUpCardContentShare from './StartUpCardContentShare';
@@ -270,12 +270,6 @@ export default function StartUpCard(props: StartUpCardProps) {
         // TODO: Show confirmation modal and delete
     };
 
-    const handleApplySubmit = async (data: ApplyStartupFormData) => {
-        // The modal already handles the API call
-        // This is just a callback for any additional actions
-        console.log('Application submitted successfully');
-    };
-
     return (
         <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 md:p-6">
             {/* Render appropriate content based on type */}
@@ -473,7 +467,6 @@ export default function StartUpCard(props: StartUpCardProps) {
             <ModalApplyStartup
                 isOpen={showApplyModal}
                 onClose={() => setShowApplyModal(false)}
-                onSubmit={handleApplySubmit}
                 startupId={id}
             />
         </div>

@@ -10,7 +10,6 @@ import Suggestion from "../pages/Suggestion";
 const UserRoute = () => {
   const location = useLocation();
   const [isFindMemberModalOpen, setIsFindMemberModalOpen] = useState(false);
-  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -31,7 +30,7 @@ const UserRoute = () => {
 
       <ButtonFunction
         onFindMember={() => setIsFindMemberModalOpen(true)}
-        onCreatePost={() => setIsCreatePostModalOpen(true)}
+        // onCreatePost={() => setIsCreatePostModalOpen(true)}
       />
 
       <FindMemberModal

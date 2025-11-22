@@ -13,7 +13,6 @@ import { TEAM_STATUS } from '../types/StartupPositionType';
 interface ApplyStartupModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: ApplyStartupFormData) => void;
     startupId: number;
 }
 
@@ -32,7 +31,6 @@ export interface ApplyStartupFormData {
 export default function ModalApplyStartup({
     isOpen,
     onClose,
-    onSubmit,
     startupId,
 }: ApplyStartupModalProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -133,10 +131,6 @@ export default function ModalApplyStartup({
             form.reset();
             onClose();
 
-            // Call parent onSubmit if provided
-            if (onSubmit) {
-                await onSubmit(values);
-            }
         } catch (error: any) {
             showErrorNotification(
                 'Ứng tuyển thất bại',

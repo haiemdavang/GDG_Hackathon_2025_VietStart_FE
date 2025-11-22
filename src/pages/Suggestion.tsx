@@ -1,8 +1,7 @@
 import Layout from '../components/Layout';
-import { TrendingUp, Users, Calendar, Lightbulb, Share2 } from 'lucide-react';
+import { TrendingUp, Users, Calendar, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import StartUpCard from '../components/StartUpCard';
-import unknownAvatar from "../assets/unknown_avatar.jpg";
 
 export default function Suggestion() {
   const navigate = useNavigate();

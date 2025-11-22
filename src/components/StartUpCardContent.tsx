@@ -27,14 +27,10 @@ interface StartUpCardContentProps {
 }
 
 export default function StartUpCardContent({
-    id,
     author,
     time,
     title,
     score,
-    likes,
-    commentsCount,
-    category,
     avatarUrl,
     visibility,
     isOwner,
@@ -42,8 +38,7 @@ export default function StartUpCardContent({
     userId,
     onVisibilityChange,
     onEditPost,
-    onDeletePost,
-    onToggleComments
+    onDeletePost
 }: StartUpCardContentProps) {
     const navigate = useNavigate();
 

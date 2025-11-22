@@ -1,5 +1,5 @@
 import { Share2, Users } from 'lucide-react';
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import unknownAvatar from "../assets/unknown_avatar.jpg";
 import CreatePostModal, { type CreatePostPayload } from '../components/CreatePostModal';
@@ -9,7 +9,6 @@ import Sidebar from '../components/Home/Sidebar';
 import SuggestFollow from '../components/Home/SuggestFollow';
 import Layout from '../components/Layout';
 import StartUpCard from '../components/StartUpCard';
-import type { MemberProfile } from '../data/ProfileData';
 import { sharedPosts } from '../data/SharedPostsData';
 import { suggestions } from '../data/SuggestionsData';
 import { trendingIdeas } from '../data/TrendingIdeasData';
@@ -17,7 +16,7 @@ import StartupService from '../service/StartupService';
 import showErrorNotification from '../Toast/NotificationError';
 import showSuccessNotification from '../Toast/NotificationSuccess';
 import type { PointResponse } from '../types/GeminiType';
-import type { CreateStartUpDto, StartUpDto, UserSuggestionDto } from '../types/StartupType';
+import type { CreateStartUpDto, StartUpDto } from '../types/StartupType';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 
@@ -159,11 +158,6 @@ export default function VietStartLayout() {
     console.log('AI Evaluate payload:', payload);
   };
 
-  const handleSelectMember = (member: UserSuggestionDto) => {
-    
-    // TODO: Add logic to invite member
-  };  
-
   // Reset when categoryId changes
   useEffect(() => {
     setStartups([]);
@@ -287,7 +281,6 @@ export default function VietStartLayout() {
           setCreatedStartupId(null);
         }}
         startupId={createdStartupId}
-        onSelectMember={handleSelectMember}
       />
     </Layout>
   );

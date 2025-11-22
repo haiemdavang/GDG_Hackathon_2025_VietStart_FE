@@ -1,7 +1,7 @@
 import { Modal, Stack, Text, Title } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { CheckCircle, Heart, Sparkles } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface SweetSuccessModalProps {
     isOpen: boolean;
@@ -10,11 +10,10 @@ interface SweetSuccessModalProps {
 }
 
 export default function SweetSuccessModal({ isOpen, onClose, memberName }: SweetSuccessModalProps) {
-    const [showConfetti, setShowConfetti] = useState(false);
+    // const [showConfetti, setShowConfetti] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
-            setShowConfetti(true);
             const timer = setTimeout(() => {
                 onClose();
             }, 3000);

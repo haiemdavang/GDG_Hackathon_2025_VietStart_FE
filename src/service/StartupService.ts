@@ -7,8 +7,7 @@ import type {
     StartUpDetailDto,
     StartUpDto,
     SuggestUsersResponse,
-    UpdateStartUpDto,
-    UserSuggestionDto
+    UpdateStartUpDto
 } from '../types/StartupType';
 import AxiosService from './AxiosService';
 import { ChatService } from './ChatService';

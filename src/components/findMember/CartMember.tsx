@@ -1,5 +1,5 @@
 import { Avatar, Badge, Card, Group, Stack, Text, Title, Box } from '@mantine/core';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Target, User } from 'lucide-react';
 import type { UserSuggestionDto } from '../../types/StartupType';
 

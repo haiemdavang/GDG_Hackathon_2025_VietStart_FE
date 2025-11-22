@@ -15,7 +15,7 @@ import {
   Image,
   Alert
 } from '@mantine/core';
-import { Send, Paperclip, X, Download, ArrowLeft, Check, XIcon, CheckCircle } from 'lucide-react';
+import { Send, Paperclip, X, Download, ArrowLeft, CheckCircle } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -150,26 +150,6 @@ export default function PrivateChat() {
     }
   };
 
-  const handleAcceptInvitation = async () => {
-    if (!chatRoom?.invitationId || !currentUser?.id) return;
-
-    setIsProcessingInvitation(true);
-    try {
-      // Chuyển sang trạng thái Dealing để trao đổi
-      await TeamStartupService.moveToDealing(chatRoom.invitationId);
-      
-      showSuccessNotification('Thành công', 'Đã chấp nhận lời mời. Hãy trao đổi với chủ startup!');
-      
-      // Reload chat room info
-      const updatedRoom = await PrivateChatService.getChatRoomInfo(chatRoomId!);
-      setChatRoom(updatedRoom);
-    } catch (error: any) {
-      showErrorNotification('Lỗi', error.message || 'Không thể chấp nhận lời mời');
-    } finally {
-      setIsProcessingInvitation(false);
-    }
-  };
-
   const handleMarkAsSuccess = async () => {
     if (!chatRoom?.invitationId || !currentUser?.id) return;
 
@@ -201,23 +181,6 @@ export default function PrivateChat() {
     }
   };
 
-  const handleRejectInvitation = async () => {
-    if (!chatRoom?.invitationId) return;
-
-    setIsProcessingInvitation(true);
-    try {
-      await TeamStartupService.rejectInvitation(chatRoom.invitationId);
-      showSuccessNotification('Thành công', 'Đã từ chối lời mời');
-      
-      // Reload chat room info
-      const updatedRoom = await PrivateChatService.getChatRoomInfo(chatRoomId!);
-      setChatRoom(updatedRoom);
-    } catch (error: any) {
-      showErrorNotification('Lỗi', error.message || 'Không thể từ chối lời mời');
-    } finally {
-      setIsProcessingInvitation(false);
-    }
-  };
 
   const formatTime = (date: Date) => {
     const now = new Date();

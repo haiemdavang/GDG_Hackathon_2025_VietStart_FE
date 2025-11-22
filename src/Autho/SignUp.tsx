@@ -3,12 +3,8 @@ import {
   Button,
   Divider,
   Group,
-  MultiSelect,
-  PasswordInput,
-  Stack,
   Stepper,
   Text,
-  TextInput,
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -23,43 +19,6 @@ import type { RegisterRequest } from '../types/UserType';
 import { validateAgreeTerms, validateConfirmPassword, validateEmail, validatePassword } from '../untils/ValidateInput';
 import { SignUpStep1 } from './SignUpStep1';
 import { SignUpStep2 } from './SignUpStep2';
-
-const SKILLS_OPTIONS = [
-  { value: 'react', label: 'React' },
-  { value: 'nodejs', label: 'Node.js' },
-  { value: 'python', label: 'Python' },
-  { value: 'java', label: 'Java' },
-  { value: 'uiux', label: 'UI/UX Design' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'sales', label: 'Sales' },
-  { value: 'business', label: 'Business Development' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'product', label: 'Product Management' },
-];
-
-const ROLES_OPTIONS = [
-  { value: 'founder', label: 'Founder/Co-founder' },
-  { value: 'developer', label: 'Developer' },
-  { value: 'designer', label: 'Designer' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'sales', label: 'Sales' },
-  { value: 'product_manager', label: 'Product Manager' },
-  { value: 'business_analyst', label: 'Business Analyst' },
-  { value: 'investor', label: 'Investor' },
-];
-
-const CATEGORY_OPTIONS = [
-  { value: 'fintech', label: 'Fintech' },
-  { value: 'ecommerce', label: 'E-commerce' },
-  { value: 'healthtech', label: 'Healthtech' },
-  { value: 'edtech', label: 'Edtech' },
-  { value: 'saas', label: 'SaaS' },
-  { value: 'ai', label: 'AI/ML' },
-  { value: 'blockchain', label: 'Blockchain' },
-  { value: 'iot', label: 'IoT' },
-  { value: 'greentech', label: 'Green Tech' },
-  { value: 'social', label: 'Social Network' },
-];
 
 interface SignUpFormValues {
   fullName: string;
