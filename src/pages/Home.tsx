@@ -3,11 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import unknownAvatar from "../assets/unknown_avatar.jpg";
 import CreatePostModal, { type CreatePostPayload } from '../components/CreatePostModal';
+import FindMemberModal from '../components/findMember/findMemeberModal';
 import FivePartPostModal, { type FivePartPostPayload } from '../components/FivePartPostModal';
 import Sidebar from '../components/Home/Sidebar';
 import SuggestFollow from '../components/Home/SuggestFollow';
 import Layout from '../components/Layout';
 import StartUpCard from '../components/StartUpCard';
+import type { MemberProfile } from '../data/ProfileData';
 import { sharedPosts } from '../data/SharedPostsData';
 import { suggestions } from '../data/SuggestionsData';
 import { trendingIdeas } from '../data/TrendingIdeasData';
@@ -27,6 +29,7 @@ export default function VietStartLayout() {
   const [hasMore, setHasMore] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showFivePartModal, setShowFivePartModal] = useState(false);
+  const [showFindMemberModal, setShowFindMemberModal] = useState(false);
   const [initialPostData, setInitialPostData] = useState<CreatePostPayload | null>(null);
 
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -147,6 +150,15 @@ export default function VietStartLayout() {
     console.log('AI Evaluate payload:', payload);
   };
 
+  const handleSelectMember = (member: MemberProfile) => {
+    console.log('Selected member:', member);
+    showSuccessNotification(
+      'Đã chọn thành viên',
+      `Bạn đã chọn ${member.fullName}`
+    );
+    // TODO: Add logic to invite member
+  };
+
   // Reset when categoryId changes
   useEffect(() => {
     setStartups([]);
@@ -262,6 +274,11 @@ export default function VietStartLayout() {
         onAiEvaluate={handleAiEvaluate}
         initialData={initialPostData?.formattedData}
         initialScore={initialPostData?.score}
+      />
+      <FindMemberModal
+        isOpen={showFindMemberModal}
+        onClose={() => setShowFindMemberModal(false)}
+        onSelectMember={handleSelectMember}
       />
     </Layout>
   );
