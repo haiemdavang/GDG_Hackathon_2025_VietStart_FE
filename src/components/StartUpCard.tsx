@@ -277,7 +277,7 @@ export default function StartUpCard(props: StartUpCardProps) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 md:p-6">
             {/* Render appropriate content based on type */}
             {isShared ? (
                 <StartUpCardContentShare
@@ -318,25 +318,25 @@ export default function StartUpCard(props: StartUpCardProps) {
 
             {/* Evaluation Elements - Only show for non-shared posts */}
             {!isShared && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100">
                     {isExpanded ? (
-                        <div className="space-y-3">
+                        <div className="space-y-2 sm:space-y-3">
                             {evaluations.map((evaluation, idx) => (
-                                <div key={idx} className="flex items-center space-x-3">
-                                    <div className="relative w-16 h-16">
-                                        <svg className="w-16 h-16 transform -rotate-90">
+                                <div key={idx} className="flex items-center space-x-2 sm:space-x-3">
+                                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex-shrink-0">
+                                        <svg className="w-full h-full transform -rotate-90">
                                             <circle
-                                                cx="32"
-                                                cy="32"
-                                                r="28"
+                                                cx="50%"
+                                                cy="50%"
+                                                r="45%"
                                                 stroke="#E5E7EB"
                                                 strokeWidth="4"
                                                 fill="none"
                                             />
                                             <circle
-                                                cx="32"
-                                                cy="32"
-                                                r="28"
+                                                cx="50%"
+                                                cy="50%"
+                                                r="45%"
                                                 stroke={getEvaluationColor(evaluation.score, evaluation.maxScore)}
                                                 strokeWidth="4"
                                                 fill="none"
@@ -345,36 +345,36 @@ export default function StartUpCard(props: StartUpCardProps) {
                                             />
                                         </svg>
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className={`text-xs font-bold ${getEvaluationTextColor(evaluation.score, evaluation.maxScore)}`}>
+                                            <span className={`text-[10px] sm:text-xs font-bold ${getEvaluationTextColor(evaluation.score, evaluation.maxScore)}`}>
                                                 {evaluation.score}/{evaluation.maxScore}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="text-sm font-medium text-gray-700">{evaluation.title}</div>
-                                        <div className="text-xs text-gray-500">{evaluation.description}</div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-xs sm:text-sm font-medium text-gray-700">{evaluation.title}</div>
+                                        <div className="text-[10px] sm:text-xs text-gray-500 line-clamp-2">{evaluation.description}</div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-5 gap-2 text-center">
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 text-center">
                             {evaluations.map((evaluation, idx) => (
                                 <div key={idx} className="flex flex-col items-center">
-                                    <div className="relative w-16 h-16">
-                                        <svg className="w-16 h-16 transform -rotate-90">
+                                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16">
+                                        <svg className="w-full h-full transform -rotate-90">
                                             <circle
-                                                cx="32"
-                                                cy="32"
-                                                r="28"
+                                                cx="50%"
+                                                cy="50%"
+                                                r="45%"
                                                 stroke="#E5E7EB"
                                                 strokeWidth="4"
                                                 fill="none"
                                             />
                                             <circle
-                                                cx="32"
-                                                cy="32"
-                                                r="28"
+                                                cx="50%"
+                                                cy="50%"
+                                                r="45%"
                                                 stroke={getEvaluationColor(evaluation.score, evaluation.maxScore)}
                                                 strokeWidth="4"
                                                 fill="none"
@@ -383,12 +383,12 @@ export default function StartUpCard(props: StartUpCardProps) {
                                             />
                                         </svg>
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className={`text-xs font-bold ${getEvaluationTextColor(evaluation.score, evaluation.maxScore)}`}>
+                                            <span className={`text-[10px] sm:text-xs font-bold ${getEvaluationTextColor(evaluation.score, evaluation.maxScore)}`}>
                                                 {evaluation.score}/{evaluation.maxScore}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="text-xs font-medium text-gray-700 mt-1">{evaluation.title}</div>
+                                    <div className="text-[10px] sm:text-xs font-medium text-gray-700 mt-1 line-clamp-1">{evaluation.title}</div>
                                 </div>
                             ))}
                         </div>
@@ -396,57 +396,57 @@ export default function StartUpCard(props: StartUpCardProps) {
 
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium flex mx-auto"
+                        className="mt-2 sm:mt-3 text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium flex mx-auto"
                     >
                         {isExpanded ? 'Thu gọn' : 'Xem thêm'}
                     </button>
                 </div>
             )}
 
-            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center space-x-4 text-gray-600">
-                    <button className="flex items-center space-x-2 hover:text-red-500">
-                        <Heart className="w-5 h-5" />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-3 sm:pt-4 border-t border-gray-100 gap-3 sm:gap-0">
+                <div className="flex items-center space-x-3 sm:space-x-4 text-gray-600 w-full sm:w-auto">
+                    <button className="flex items-center space-x-1 sm:space-x-2 hover:text-red-500 text-sm sm:text-base">
+                        <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span>{likesCount}</span>
                     </button>
                     <button
-                        className="flex items-center space-x-2 hover:text-blue-500"
+                        className="flex items-center space-x-1 sm:space-x-2 hover:text-blue-500 text-sm sm:text-base"
                         onClick={() => setShowComments(!showComments)}
                     >
-                        <MessageCircle className="w-5 h-5" />
+                        <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span>{commentsData.length}</span>
                     </button>
                     <button
-                        className="flex items-center space-x-2 hover:text-green-500"
+                        className="flex items-center space-x-1 sm:space-x-2 hover:text-green-500 text-sm sm:text-base"
                         onClick={() => setShowShareModal(true)}
                     >
-                        <Share2 className="w-5 h-5" />
-                        <span>Chia sẻ</span>
+                        <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="hidden sm:inline">Chia sẻ</span>
                     </button>
                 </div>
-                <div className="flex items-center space-x-3">
-                    <span className="px-3 py-1 bg-blue-50 text-blue-600 text-sm rounded-full">{category}</span>
+                <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+                    <span className="px-2 sm:px-3 py-1 bg-blue-50 text-blue-600 text-xs sm:text-sm rounded-full whitespace-nowrap">{category}</span>
                     {!isOwner && (
                         <button
                             onClick={() => setShowApplyModal(true)}
-                            className="flex items-center space-x-2 px-4 py-2 bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-colors font-medium text-sm"
+                            className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-yellow-400 text-white rounded-full hover:bg-yellow-500 transition-colors font-medium text-xs sm:text-sm"
                         >
-                            <UserPlus className="w-4 h-4" />
-                            <Avatar.Group spacing="sm">
-                                {applicants.slice(0, 3).map((applicant) => (
+                            <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <Avatar.Group spacing="xs">
+                                {applicants.slice(0, 2).map((applicant) => (
                                     <Avatar
                                         key={applicant.id}
                                         src={applicant.avatar}
-                                        size="sm"
+                                        size="xs"
                                         radius="xl"
+                                        className="hidden sm:block"
                                     />
                                 ))}
-                                {applicants.length > 3 && (
-                                    <Avatar size="sm" radius="xl">
-                                        +{applicants.length - 3}
-                                    </Avatar>
-                                )}
+                                <Avatar size="xs" radius="xl" className="hidden sm:block">
+                                    +{applicants.length}
+                                </Avatar>
                             </Avatar.Group>
+                            <span className="sm:hidden">Tham gia</span>
                         </button>
                     )}
                 </div>

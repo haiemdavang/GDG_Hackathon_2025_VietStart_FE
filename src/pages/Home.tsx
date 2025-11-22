@@ -12,7 +12,6 @@ import { sharedPosts } from '../data/SharedPostsData';
 import { suggestions } from '../data/SuggestionsData';
 import { trendingIdeas } from '../data/TrendingIdeasData';
 import StartupService from '../service/StartupService';
-import { useAppSelector } from '../store/hooks';
 import showErrorNotification from '../Toast/NotificationError';
 import showSuccessNotification from '../Toast/NotificationSuccess';
 import type { PointResponse } from '../types/GeminiType';
@@ -21,8 +20,6 @@ import type { CreateStartUpDto, StartUpDto } from '../types/StartupType';
 export default function VietStartLayout() {
   const [searchParams] = useSearchParams();
   const categoryId = searchParams.get('categoryId');
-
-  const { user } = useAppSelector((state) => state.auth);
 
   const [startups, setStartups] = useState<StartUpDto[]>([]);
   const [page, setPage] = useState(1);
@@ -37,7 +34,6 @@ export default function VietStartLayout() {
 
   const fetchStartups = async (pageNumber: number, isInitial: boolean = false) => {
     if (isLoading || (!hasMore && !isInitial)) return;
-    // if (user == null) return;
 
     try {
       setIsLoading(true);
@@ -161,41 +157,43 @@ export default function VietStartLayout() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-12 gap-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Left Sidebar */}
-          <div className="col-span-3">
+          <div className="hidden lg:block lg:col-span-3">
             <Sidebar trendingIdeas={trendingIdeas} />
           </div>
 
           {/* Main Content */}
-          <div className="col-span-6">
+          <div className="col-span-1 lg:col-span-6">
             {/* Post Creation */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <div className="flex items-start space-x-3">
-                <img src={unknownAvatar} className="w-12 h-12 rounded-full flex-shrink-0" alt="Avatar" />
-                <div className="flex-1">
+            <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="flex items-start space-x-2 sm:space-x-3">
+                <img src={unknownAvatar} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0" alt="Avatar" />
+                <div className="flex-1 min-w-0">
                   <button
                     onClick={() => setShowCreateModal(true)}
-                    className="w-full text-left rounded-2xl border border-gray-200 bg-gray-50 p-4 text-gray-600 transition hover:border-yellow-400 hover:bg-white"
+                    className="w-full text-left rounded-2xl border border-gray-200 bg-gray-50 p-3 sm:p-4 text-gray-600 transition hover:border-yellow-400 hover:bg-white"
                   >
-                    <div className="text-base font-medium text-gray-700">Bạn có ý tưởng gì mới?</div>
-                    <p className="text-sm text-gray-400 mt-1">Chia sẻ cảm hứng khởi nghiệp để nhận góp ý từ cộng đồng</p>
+                    <div className="text-sm sm:text-base font-medium text-gray-700">Bạn có ý tưởng gì mới?</div>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-1 hidden sm:block">Chia sẻ cảm hứng khởi nghiệp để nhận góp ý từ cộng đồng</p>
                   </button>
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 gap-2 sm:gap-0">
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <span className="flex items-center space-x-1 rounded-full border border-gray-200 px-3 py-1 text-xs">
-                        <Users className="w-4 h-4" />
-                        <span>AI hỗ trợ</span>
+                      <span className="flex items-center space-x-1 rounded-full border border-gray-200 px-2 sm:px-3 py-1 text-xs">
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">AI hỗ trợ</span>
+                        <span className="sm:hidden">AI</span>
                       </span>
-                      <span className="flex items-center space-x-1 rounded-full border border-gray-200 px-3 py-1 text-xs">
-                        <Share2 className="w-4 h-4" />
-                        <span>Công khai</span>
+                      <span className="flex items-center space-x-1 rounded-full border border-gray-200 px-2 sm:px-3 py-1 text-xs">
+                        <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Công khai</span>
+                        <span className="sm:hidden">Public</span>
                       </span>
                     </div>
                     <button
                       onClick={() => setShowCreateModal(true)}
-                      className="px-6 py-2 bg-yellow-400 text-white rounded-full font-medium hover:bg-yellow-500"
+                      className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-yellow-400 text-white rounded-full text-sm font-medium hover:bg-yellow-500"
                     >
                       Tạo bài viết
                     </button>
@@ -205,7 +203,7 @@ export default function VietStartLayout() {
             </div>
 
             {/* Posts Feed */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Shared Posts */}
               {sharedPosts.map((post) => (
                 <StartUpCard key={`shared-${post.id}`} {...post} />
@@ -219,21 +217,21 @@ export default function VietStartLayout() {
 
             {/* Loading Indicator */}
             {isLoading && (
-              <div className="flex justify-center py-8">
+              <div className="flex justify-center py-6 sm:py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
               </div>
             )}
 
             {/* End of Posts Message */}
             {!hasMore && startups.length > 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-6 sm:py-8 text-gray-500">
                 <p className="text-sm">Hết bài viết cho bạn</p>
               </div>
             )}
 
             {/* No Posts Message */}
             {!isLoading && startups.length === 0 && (
-              <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+              <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8 text-center">
                 <p className="text-gray-500">Chưa có bài viết nào</p>
               </div>
             )}
@@ -243,7 +241,7 @@ export default function VietStartLayout() {
           </div>
 
           {/* Right Sidebar */}
-          <div className="col-span-3">
+          <div className="hidden lg:block lg:col-span-3">
             <SuggestFollow suggestions={suggestions} />
           </div>
         </div>

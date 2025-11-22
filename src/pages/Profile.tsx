@@ -66,11 +66,11 @@ export default function Profile() {
   return (
     <Layout>
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="grid grid-cols-12 gap-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
             {/* Left Sidebar - Profile Info */}
-            <div className="col-span-4">
-              <div className="sticky top-20">
+            <div className="col-span-1 lg:col-span-4">
+              <div className="lg:sticky lg:top-20">
                 <ProfileCard
                   profileData={profileData}
                   onEditClick={() => setIsModalOpen(true)}
@@ -88,26 +88,26 @@ export default function Profile() {
             </div>
 
             {/* Main Content */}
-            <div className="col-span-8">
+            <div className="col-span-1 lg:col-span-8">
               {/* Bio Section */}
-              <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <h3 className="font-bold text-lg mb-3">Giới thiệu</h3>
-                <p className="text-gray-700">
+              <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+                <h3 className="font-bold text-base sm:text-lg mb-2 sm:mb-3">Giới thiệu</h3>
+                <p className="text-sm sm:text-base text-gray-700">
                   {profileData.bio}
                 </p>
               </div>
 
               {/* Ideas List */}
-              <div className="mb-4">
-                <h3 className="font-bold text-xl mb-4">Ý tưởng ({userStartups.length})</h3>
+              <div className="mb-3 sm:mb-4">
+                <h3 className="font-bold text-lg sm:text-xl mb-3 sm:mb-4">Ý tưởng ({userStartups.length})</h3>
               </div>
 
               {isLoading ? (
                 <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                  <p className="text-gray-500">Đang tải...</p>
+                  <p className="text-sm sm:text-base text-gray-500">Đang tải...</p>
                 </div>
               ) : userStartups.length > 0 ? (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {userStartups.map((startup) => (
                     <StartUpCard
                       key={startup.id}
@@ -119,13 +119,13 @@ export default function Profile() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white rounded-lg shadow-sm p-6 text-center text-gray-500">
-                  <div className="py-12">
-                    <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <User className="w-8 h-8 text-gray-400" />
+                <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 text-center text-gray-500">
+                  <div className="py-8 sm:py-12">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full mx-auto mb-3 sm:mb-4 flex items-center justify-center">
+                      <User className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
                     </div>
-                    <p className="text-lg font-medium mb-2">Chưa có ý tưởng nào</p>
-                    <p className="text-sm">
+                    <p className="text-base sm:text-lg font-medium mb-2">Chưa có ý tưởng nào</p>
+                    <p className="text-xs sm:text-sm px-4">
                       {isOwnProfile
                         ? 'Khi bạn chia sẻ ý tưởng, chúng sẽ xuất hiện ở đây'
                         : 'Người dùng này chưa chia sẻ ý tưởng nào'}
