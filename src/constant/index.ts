@@ -50,6 +50,7 @@ export const APP_ROUTES = {
   EDIT_PROFILE: '/profile/edit',
   SUGGESTION: '/suggestion',
   MY_POSTS: '/my-posts',
+  FIND_MEMBER: '/find-member',
 
   ADMIN: {
     BASE: '/admin/*',
