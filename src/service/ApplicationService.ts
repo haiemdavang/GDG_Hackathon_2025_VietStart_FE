@@ -60,7 +60,7 @@ export const ApplicationService = {
         data: UpdateApplicationStatusDto
     ): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/Applications/${applicationId}/status`, data);
+            const response = await AxiosService.post(`/api/Applications/${applicationId}/status`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -73,7 +73,7 @@ export const ApplicationService = {
     // Delete application
     deleteApplication: async (applicationId: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/Applications/${applicationId}`);
+            const response = await AxiosService.post(`/api/Applications/${applicationId}/delete`);
             return response;
         } catch (error: any) {
             throw error;

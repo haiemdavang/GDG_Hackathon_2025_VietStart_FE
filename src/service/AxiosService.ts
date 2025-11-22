@@ -180,16 +180,8 @@ class AxiosService {
         return this.publicAxiosInstance.post<T>(url, data, config);
     }
 
-    public publicPut<T = any>(url: string, data?: any, config?: any): Promise<AxiosResponse<T>> {
-        return this.publicAxiosInstance.put<T>(url, data, config);
-    }
-
     public publicPatch<T = any>(url: string, data?: any, config?: any): Promise<AxiosResponse<T>> {
         return this.publicAxiosInstance.patch<T>(url, data, config);
-    }
-
-    public publicDelete<T = any>(url: string, config?: any): Promise<AxiosResponse<T>> {
-        return this.publicAxiosInstance.delete<T>(url, config);
     }
 }
 

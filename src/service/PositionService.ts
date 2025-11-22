@@ -57,7 +57,7 @@ export const PositionService = {
     // Update position (Admin only)
     updatePosition: async (id: number, data: UpdatePositionDto): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/Positions/${id}`, data);
+            const response = await AxiosService.post(`/api/Positions/${id}`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -74,7 +74,7 @@ export const PositionService = {
     // Delete position (Admin only)
     deletePosition: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/Positions/${id}`);
+            const response = await AxiosService.post(`/api/Positions/${id}/delete`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {

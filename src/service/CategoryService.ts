@@ -48,7 +48,7 @@ export const CategoryService = {
     // Update category (Admin only)
     updateCategory: async (id: number, data: UpdateCategoryDto): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.put(`/api/Categories/${id}`, data);
+            const response = await AxiosService.post(`/api/Categories/${id}`, data);
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {
@@ -67,7 +67,7 @@ export const CategoryService = {
     // Delete category (Admin only)
     deleteCategory: async (id: number): Promise<AxiosResponse> => {
         try {
-            const response = await AxiosService.delete(`/api/Categories/${id}`);
+            const response = await AxiosService.post(`/api/Categories/${id}/delete`);
             return response;
         } catch (error: any) {
             if (error.response?.status === 403) {
