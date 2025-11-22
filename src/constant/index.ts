@@ -1,4 +1,4 @@
-// import type { UserRoleType } from "../types/UserType"
+import type { UserRoleType } from "../types/UserType";
 
 export const BASE_API_URL = import.meta.env.VITE_BASE_API_URL || 'http://localhost:4141/api'
 export const BASE_BE_URL = import.meta.env.VITE_BASE_BE_URL || 'http://localhost:4141'
@@ -16,11 +16,23 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/login',
     LOGOUT: '/logout',
+    FORGOT_PASSWORD: '/forgot-password',
+    REFRESH: '/auth/refresh-token',
+    SWITCH_TOKEN_TYPE: (type: UserRoleType) => `/auth/switch-token-type?type=${type}`,
+    HISTORY_LOGIN: '/history-login',
   },
-
+  OTP: {
+    GET_OTP: '/otp/sendOtp',
+    VERIFY_OTP: '/otp/verifyOTP',
+  },
   USERS: {
     ME: '/user/me',
-   
+    REGISTER: '/user/register',
+    PROFILE: '/user/profile',
+    CHANGE_PASSWORD: '/user/change-password',
+    RESET_PASSWORD: '/user/reset-password',
+    UPDATE_PROFILE: '/user/update-profile',
+    VERIFY_EMAIL: '/user/verify-email',
   },
   ADMIN: {
   },

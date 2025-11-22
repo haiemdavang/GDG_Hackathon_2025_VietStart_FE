@@ -14,7 +14,14 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FaFacebook, FaGoogle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
+import AuthService from '../service/AuthService';
+import UserService from '../service/UserService';
+import { setCredentials } from '../store/authSlice';
+import { useAppDispatch } from '../store/hooks';
 import showErrorNotification from '../Toast/NotificationError';
+import showSuccessNotification from '../Toast/NotificationSuccess';
+import { getUserIdFromToken } from '../untils/Helper';
+import { validateEmail, validatePassword } from '../untils/ValidateInput';
 
 interface SignInFormValues {
   email: string;
@@ -24,20 +31,81 @@ interface SignInFormValues {
 export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const form = useForm<SignInFormValues>({
     initialValues: {
       email: 'user@example.com',
       password: 'Abc123!@#',
     },
-    
+    validate: {
+      email: (value) => validateEmail(value),
+      password: (value) => validatePassword(value),
+    },
   });
 
   const handleSubmit = async (values: SignInFormValues) => {
     form.clearErrors();
     setIsLoading(true);
 
-  
+    try {
+      const response = await AuthService.login(values.email, values.password);
+
+      if (response.status === 200) {
+        const { access_token } = response.data;
+
+        // Get user ID from token
+        const userId = getUserIdFromToken(access_token);
+        if (userId) {
+          // Fetch user profile
+          const userResponse = await UserService.getUserProfile(userId);
+
+          if (userResponse.status === 200) {
+            // Update Redux store
+            dispatch(setCredentials(userResponse.data));
+
+            showSuccessNotification(
+              'Đăng nhập thành công!',
+              'Chào mừng bạn quay trở lại.'
+            );
+
+            // Navigate to home page
+            setTimeout(() => {
+              navigate('/');
+            }, 1000);
+          }
+        } else {
+          throw new Error('Không thể xác thực người dùng');
+        }
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+
+      let errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại!';
+
+      if (error.response) {
+        const status = error.response.status;
+        const data = error.response.data;
+
+        if (status === 400) {
+          errorMessage = data?.message || data?.title || 'Thông tin đăng nhập không hợp lệ';
+        } else if (status === 401) {
+          errorMessage = 'Email hoặc mật khẩu không đúng';
+        } else if (status === 403) {
+          errorMessage = 'Tài khoản chưa được xác thực email';
+        } else if (data?.message) {
+          errorMessage = data.message;
+        } else if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          errorMessage = data.errors[0];
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showErrorNotification('Đăng nhập thất bại', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {

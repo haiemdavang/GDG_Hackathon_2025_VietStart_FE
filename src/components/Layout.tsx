@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import logo from "../assets/logo.png";
 import unknownAvatar from "../assets/unknown_avatar.jpg";
 import { APP_ROUTES } from '../constant';
+import AuthService from '../service/AuthService';
+import UserService from '../service/UserService';
+import { logout, setUser } from '../store/authSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +15,8 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
   const [showDropdown, setShowDropdown] = React.useState(false);
 
   useEffect(() => {
