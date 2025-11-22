@@ -53,6 +53,11 @@ export const APP_ROUTES = {
   FIND_MEMBER: '/find-member',
   CHAT_LIST: '/chat',
   CHAT_ROOM: (startupId: number) => `/chat/${startupId}`,
+  INVITATIONS: '/invitations',
+  SENT_INVITATIONS: '/sent-invitations',
+  PRIVATE_CHAT: (chatRoomId: string) => `/private-chat/${chatRoomId}`,
+  PRIVATE_CHAT_LIST: '/private-chat',
+  MESSAGES: '/messages',
 
   ADMIN: {
     BASE: '/admin/*',

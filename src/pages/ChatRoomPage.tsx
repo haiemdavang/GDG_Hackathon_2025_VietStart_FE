@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import ChatRoom from '../components/ChatGroup/ChatRoom';
 import { StartupService } from '../service/StartupService';
-import { TeamStartupService } from '../service/TeamStartupService';
 import showErrorNotification from '../Toast/NotificationError';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
@@ -27,16 +26,13 @@ export default function ChatRoomPage() {
 
     try {
       // Lấy thông tin startup
-      const startup = await StartupService.getStartupById(parseInt(startupId));
-      setStartupName(startup.name);
+      const response = await StartupService.getStartupById(parseInt(startupId));
+      const startup = response.data;
+      setStartupName(startup.idea || startup.team || 'Startup Chat');
 
-      // Lấy danh sách members đã được accepted
-      const teamMembers = await TeamStartupService.getTeamMembers(parseInt(startupId));
-      const acceptedMembers = teamMembers
-        .filter(member => member.status === 'Đã chấp nhận')
-        .map(member => member.userId);
-      
-      setMembers(acceptedMembers);
+      // Members sẽ được lấy từ Firebase trong ChatRoom component
+      // Không cần gọi API backend vì Firebase đã có danh sách members chính xác
+      setMembers([]);
     } catch (error) {
       showErrorNotification('Lỗi', 'Không thể tải thông tin startup');
       navigate('/chat');

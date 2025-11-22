@@ -12,6 +12,10 @@ import { APP_ROUTES } from './constant';
 import { store } from './store/store';
 import ChatList from './pages/ChatList';
 import ChatRoomPage from './pages/ChatRoomPage';
+import Invitations from './pages/Invitations';
+import SentInvitations from './pages/SentInvitations';
+import PrivateChat from './components/PrivateChat/PrivateChat';
+import Messages from './pages/Messages';
 
 const AuthoPage = lazy(() => import('./routes/AuthRoute'));
 const UserRoute = lazy(() => import('./routes/UserRoute'));
@@ -65,6 +69,10 @@ function App() {
                 <Route path="/*" element={<UserRoute />} />
                 <Route path="/chat" element={<ChatList />} />
                 <Route path="/chat/:startupId" element={<ChatRoomPage />} />
+                <Route path="/invitations" element={<Invitations />} />
+                <Route path="/sent-invitations" element={<SentInvitations />} />
+                <Route path="/private-chat/:chatRoomId" element={<PrivateChat />} />
+                <Route path="/messages" element={<Messages />} />
               </Routes>
             </main>
           </div>

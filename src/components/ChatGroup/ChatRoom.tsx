@@ -21,7 +21,6 @@ import type { RootState } from '../../store/store';
 import { ChatService } from '../../service/ChatService';
 import type { ChatMessage } from '../../types/ChatType';
 import showErrorNotification from '../../Toast/NotificationError';
-import showSuccessNotification from '../../Toast/NotificationSuccess';
 
 interface ChatRoomProps {
   startupId: number;
@@ -36,18 +35,25 @@ export default function ChatRoom({ startupId, startupName, members }: ChatRoomPr
   const [file, setFile] = useState<File | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [actualMembers, setActualMembers] = useState<string[]>(members || []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser?.id) return;
 
     let unsubscribe: (() => void) | undefined;
 
     const initChat = async () => {
       try {
-        // Tạo hoặc lấy chat room
-        await ChatService.getOrCreateChatRoom(startupId, startupName, members);
+        // Tạo hoặc lấy chat room (cho phép members rỗng nếu room đã tồn tại)
+        await ChatService.getOrCreateChatRoom(startupId, startupName, members || []);
+
+        // Lấy thông tin chat room để cập nhật số lượng members
+        const roomInfo = await ChatService.getChatRoomInfo(`startup_${startupId}`);
+        if (roomInfo?.members) {
+          setActualMembers(roomInfo.members);
+        }
 
         // Lắng nghe tin nhắn realtime
         unsubscribe = ChatService.subscribeToMessages(startupId, (msgs) => {
@@ -57,7 +63,9 @@ export default function ChatRoom({ startupId, startupName, members }: ChatRoomPr
         });
 
         // Đánh dấu đã đọc
-        await ChatService.markMessagesAsRead(startupId, currentUser.id);
+        if (currentUser?.id) {
+          await ChatService.markMessagesAsRead(startupId, currentUser.id);
+        }
       } catch (error) {
         console.error('Error initializing chat:', error);
         showErrorNotification('Lỗi', 'Không thể tải tin nhắn');
@@ -80,7 +88,7 @@ export default function ChatRoom({ startupId, startupName, members }: ChatRoomPr
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() && !file) return;
-    if (!currentUser) {
+    if (!currentUser?.id) {
       showErrorNotification('Lỗi', 'Vui lòng đăng nhập');
       return;
     }
@@ -160,7 +168,7 @@ export default function ChatRoom({ startupId, startupName, members }: ChatRoomPr
         <Box style={{ flex: 1 }}>
           <Text fw={600} size="lg">{startupName}</Text>
           <Text size="sm" c="dimmed">
-            {members.length} thành viên
+            {actualMembers.length} thành viên
           </Text>
         </Box>
       </Group>

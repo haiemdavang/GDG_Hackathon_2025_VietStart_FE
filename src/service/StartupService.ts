@@ -11,6 +11,8 @@ import type {
     UserSuggestionDto
 } from '../types/StartupType';
 import AxiosService from './AxiosService';
+import { ChatService } from './ChatService';
+import { getUserIdFromToken } from '../untils/Helper';
 
 export const StartupService = {
     getStartups: async (
@@ -63,6 +65,36 @@ export const StartupService = {
     createStartup: async (data: CreateStartUpDto): Promise<AxiosResponse<StartUpDto>> => {
         try {
             const response = await AxiosService.post<StartUpDto>('/api/Startups', data);
+            
+            // Create Firebase group chat immediately with owner as the only member
+            try {
+                const token = localStorage.getItem('token');
+                if (token && response.data.id) {
+                    const userId = getUserIdFromToken(token);
+                    console.log('Creating Firebase chat - userId:', userId, 'startupId:', response.data.id);
+                    
+                    if (userId) {
+                        // Use idea from request data as fallback since response might not include it
+                        const startupName = response.data.idea || data.idea || response.data.team || data.prototype || 'Startup Chat';
+                        console.log('Startup name for chat:', startupName);
+                        
+                        await ChatService.getOrCreateChatRoom(
+                            response.data.id,
+                            startupName,
+                            [userId]
+                        );
+                        console.log('Firebase chat room created successfully');
+                    } else {
+                        console.warn('Cannot create Firebase chat: userId not found in token');
+                    }
+                } else {
+                    console.warn('Cannot create Firebase chat: missing token or startup id');
+                }
+            } catch (firebaseError) {
+                // Don't fail startup creation if Firebase fails
+                console.error('Failed to create Firebase chat room:', firebaseError);
+            }
+            
             return response;
         } catch (error: any) {
             if (error.response?.status === 400) {

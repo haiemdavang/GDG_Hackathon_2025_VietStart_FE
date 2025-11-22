@@ -1,4 +1,4 @@
-import { Calendar, Lightbulb, TrendingUp, Users, MessageCircle } from 'lucide-react';
+import { Calendar, Lightbulb, TrendingUp, Users, Mail, Send, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryService from '../../service/CategoryService';
@@ -81,12 +81,28 @@ export default function Sidebar({ trendingIdeas }: SidebarProps) {
                     <span className={isActive('/suggestion') ? 'font-medium' : ''}>Đề xuất dự án phù hợp</span>
                 </button>
                 <button
-                    onClick={() => navigate(APP_ROUTES.CHAT_LIST)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/chat') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
+                    onClick={() => navigate(APP_ROUTES.MESSAGES)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/messages') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
                         }`}
                 >
-                    <MessageCircle className="w-5 h-5" />
-                    <span className={isActive('/chat') ? 'font-medium' : ''}>Tin nhắn nhóm</span>
+                    <MessageSquare className="w-5 h-5" />
+                    <span className={isActive('/messages') ? 'font-medium' : ''}>Tin nhắn</span>
+                </button>
+                <button
+                    onClick={() => navigate(APP_ROUTES.INVITATIONS)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/invitations') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
+                        }`}
+                >
+                    <Mail className="w-5 h-5" />
+                    <span className={isActive('/invitations') ? 'font-medium' : ''}>Lời mời nhận</span>
+                </button>
+                <button
+                    onClick={() => navigate(APP_ROUTES.SENT_INVITATIONS)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/sent-invitations') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
+                        }`}
+                >
+                    <Send className="w-5 h-5" />
+                    <span className={isActive('/sent-invitations') ? 'font-medium' : ''}>Lời mời đã gửi</span>
                 </button>
             </nav>
 

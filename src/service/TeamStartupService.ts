@@ -162,14 +162,241 @@ export const TeamStartupService = {
         }
     },
 
+    // DEPRECATED: Use sendInvitation instead
     inviteStartUp: async (startUpId: number, userId: string): Promise<AxiosResponse> => {
         try {
             const data: CreateTeamStartUpDtoType = {
                 startUpId,
-                userId,
-                status: 'Pending'
+                userId
             };
             
+            const response = await AxiosService.post('/api/TeamStartUps/invite', data);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                // Backend trả về message trong error.response.data.Message hoặc error.response.data.message
+                const message = error.response.data?.Message || error.response.data?.message || 'Không thể gửi lời mời';
+                console.error('Invite error details:', error.response.data);
+                throw new Error(message);
+            }
+            if (error.response?.status === 403) {
+                throw new Error('Bạn không có quyền gửi lời mời cho startup này');
+            }
+            throw error;
+        }
+    },
+
+    // DEPRECATED: Use getMyInvitations (received-invites endpoint) instead
+
+    // PUT: api/teamstartups/{id}/accept-invite - Accept invitation (receiver)
+    acceptInvitation: async (id: number): Promise<AxiosResponse> => {
+        try {
+            const response = await AxiosService.put(`/api/TeamStartUps/${id}/accept-invite`);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể chấp nhận lời mời';
+                throw new Error(message);
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Lời mời không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // PUT: api/teamstartups/{id}/reject-invite - Reject invitation (receiver)
+    rejectInvitation: async (id: number, reason?: string): Promise<AxiosResponse> => {
+        try {
+            const response = await AxiosService.put(`/api/TeamStartUps/${id}/reject-invite`, 
+                reason ? { reason } : {}
+            );
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể từ chối lời mời';
+                throw new Error(message);
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Lời mời không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // DELETE: api/teamstartups/{id}/cancel-request - Cancel request
+    cancelRequest: async (id: number): Promise<AxiosResponse> => {
+        try {
+            const response = await AxiosService.delete(`/api/TeamStartUps/${id}/cancel-request`);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể hủy yêu cầu';
+                throw new Error(message);
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Yêu cầu không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // PUT: api/teamstartups/{id}/accept-invite - Change status to Dealing (Accepted by invitee)
+    moveToDealing: async (id: number): Promise<AxiosResponse> => {
+        try {
+            // Sử dụng API accept-invite để chuyển sang Dealing
+            const response = await AxiosService.put(`/api/TeamStartUps/${id}/accept-invite`);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể chấp nhận lời mời';
+                throw new Error(message);
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Lời mời không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // PUT: api/teamstartups/{id}/confirm-success - Mark as Success (Owner finalizes)
+    markAsSuccess: async (id: number): Promise<AxiosResponse> => {
+        try {
+            const response = await AxiosService.put(`/api/TeamStartUps/${id}/confirm-success`);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể hoàn tất lời mời';
+                throw new Error(message);
+            }
+            if (error.response?.status === 403) {
+                throw new Error('Chỉ chủ startup mới có quyền hoàn tất');
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Lời mời không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // GET: api/teamstartups/sent-invites - Lấy danh sách lời mời đã gửi (for owner)
+    getMySentInvitations: async (status?: string): Promise<AxiosResponse<PaginatedTeamStartUpsResponse>> => {
+        try {
+            const params = new URLSearchParams();
+            if (status) {
+                // Convert string status to enum number
+                const statusMap: { [key: string]: number } = {
+                    'Pending': 0,
+                    'Dealing': 1,
+                    'Success': 2,
+                    'Rejected': 3
+                };
+                params.append('status', statusMap[status]?.toString() || '0');
+            }
+            
+            const response = await AxiosService.get<PaginatedTeamStartUpsResponse>(
+                `/api/TeamStartUps/sent-invites?${params.toString()}`
+            );
+            return response;
+        } catch (error: any) {
+            throw error;
+        }
+    },
+
+    // GET: api/teamstartups/received-invites - Lấy danh sách lời mời nhận được (for receiver)
+    getMyInvitations: async (status?: string): Promise<AxiosResponse<PaginatedTeamStartUpsResponse>> => {
+        try {
+            const params = new URLSearchParams();
+            if (status) {
+                // Convert string status to enum number
+                const statusMap: { [key: string]: number } = {
+                    'Pending': 0,
+                    'Dealing': 1,
+                    'Success': 2,
+                    'Rejected': 3
+                };
+                params.append('status', statusMap[status]?.toString() || '0');
+            }
+            
+            const response = await AxiosService.get<PaginatedTeamStartUpsResponse>(
+                `/api/TeamStartUps/received-invites?${params.toString()}`
+            );
+            return response;
+        } catch (error: any) {
+            throw error;
+        }
+    },
+
+    // DELETE: api/teamstartups/{id}/cancel-invite - Cancel invitation (owner, when Pending)
+    cancelInvite: async (id: number): Promise<AxiosResponse> => {
+        try {
+            const response = await AxiosService.delete(`/api/TeamStartUps/${id}/cancel-invite`);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể hủy lời mời';
+                throw new Error(message);
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Lời mời không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // PUT: api/teamstartups/{id}/cancel-dealing - Cancel dealing (owner, when Dealing)
+    cancelDealing: async (id: number, reason?: string): Promise<AxiosResponse> => {
+        try {
+            const response = await AxiosService.put(`/api/TeamStartUps/${id}/cancel-dealing`, 
+                reason ? { reason } : {}
+            );
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể hủy bỏ';
+                throw new Error(message);
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Lời mời không tồn tại');
+            }
+            throw error;
+        }
+    },
+
+    // GET: api/teamstartups/dealing-chats - Lấy danh sách đang Dealing (both owner and receiver)
+    getDealingChats: async (): Promise<AxiosResponse<PaginatedTeamStartUpsResponse>> => {
+        try {
+            const response = await AxiosService.get<PaginatedTeamStartUpsResponse>(
+                '/api/TeamStartUps/dealing-chats'
+            );
+            return response;
+        } catch (error: any) {
+            throw error;
+        }
+    },
+
+    // GET: api/teamstartups/my-team-members - Lấy thành viên đã Success
+    getMyTeamMembers: async (startUpId?: number): Promise<AxiosResponse<PaginatedTeamStartUpsResponse>> => {
+        try {
+            const params = new URLSearchParams();
+            if (startUpId) params.append('startUpId', startUpId.toString());
+            
+            const response = await AxiosService.get<PaginatedTeamStartUpsResponse>(
+                `/api/TeamStartUps/my-team-members?${params.toString()}`
+            );
+            return response;
+        } catch (error: any) {
+            throw error;
+        }
+    },
+
+    // POST: api/teamstartups/invite - Send invitation (owner)
+    sendInvitation: async (startUpId: number, userId: string): Promise<AxiosResponse> => {
+        try {
+            const data: CreateTeamStartUpDtoType = {
+                startUpId,
+                userId
+            };
             const response = await AxiosService.post('/api/TeamStartUps/invite', data);
             return response;
         } catch (error: any) {
@@ -177,8 +404,22 @@ export const TeamStartupService = {
                 const message = error.response.data?.Message || 'Không thể gửi lời mời';
                 throw new Error(message);
             }
-            if (error.response?.status === 403) {
-                throw new Error('Bạn không có quyền gửi lời mời cho startup này');
+            throw error;
+        }
+    },
+
+    // DELETE: api/teamstartups/{id}/remove-member - Remove member (owner)
+    removeMember: async (id: number): Promise<AxiosResponse> => {
+        try {
+            const response = await AxiosService.delete(`/api/TeamStartUps/${id}/remove-member`);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const message = error.response.data?.Message || 'Không thể xóa thành viên';
+                throw new Error(message);
+            }
+            if (error.response?.status === 404) {
+                throw new Error('Thành viên không tồn tại');
             }
             throw error;
         }
