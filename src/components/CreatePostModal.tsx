@@ -16,13 +16,6 @@ import {
 import { Bot, Globe, Lock } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import unknownAvatar from '../assets/unknown_avatar.jpg';
-import CategoryService from '../service/CategoryService';
-import GeminiService from '../service/GeminiService';
-import { useAppSelector } from '../store/hooks';
-import showErrorNotification from '../Toast/NotificationError';
-import showSuccessNotification from '../Toast/NotificationSuccess';
-import type { CategoryDto } from '../types/CategoryType';
-import type { PointResponse, StartupInfo } from '../types/GeminiType';
 
 export type CreatePostPayload = {
   content: string;
@@ -53,31 +46,7 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePos
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
   // Fetch categories on mount
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await CategoryService.getAllCategories();
-        setCategories(response.data);
-        // Set default category to first one if available
-        if (response.data.length > 0) {
-          setCategory(response.data[0].name);
-        }
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-        showErrorNotification('Lỗi', 'Không thể tải danh mục');
-      } finally {
-        setIsLoadingCategories(false);
-      }
-    };
-
-    if (isOpen) {
-      fetchCategories();
-      setContent('');
-      setVisibility('public');
-      setHashtags('');
-      setAiAssist(true);
-    }
-  }, [isOpen]);
+  
 
   const disabled = useMemo(() => !content.trim(), [content]);
 
@@ -86,58 +55,6 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePos
 
     setIsSubmitting(true);
 
-    try {
-      const tags = hashtags
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean);
-
-      // Find selected category
-      const selectedCategory = categories.find(cat => cat.name === category);
-
-      if (!selectedCategory) {
-        showErrorNotification('Lỗi', 'Vui lòng chọn danh mục');
-        setIsSubmitting(false);
-        return;
-      }
-
-      let payload: CreatePostPayload = {
-        content: content.trim(),
-        visibility,
-        hashtags: tags,
-        category: category,
-        categoryId: selectedCategory.id,
-        aiAssist,
-      };
-
-      if (aiAssist) {
-        showSuccessNotification(
-          'Đang xử lý',
-          'AI đang phân tích nội dung của bạn...'
-        );
-
-        const { formatted, score } = await GeminiService.formatAndCalculate(content.trim());
-
-        payload.formattedData = formatted;
-        payload.score = score;
-
-        showSuccessNotification(
-          'Phân tích hoàn tất',
-          `Điểm đánh giá: ${score.TotalScore}/100`
-        );
-      }
-
-      onSubmit(payload);
-      onClose();
-    } catch (error: any) {
-      console.error('Submit error:', error);
-      showErrorNotification(
-        'Lỗi xử lý',
-        error.message || 'Không thể xử lý yêu cầu. Vui lòng thử lại!'
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
