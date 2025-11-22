@@ -10,6 +10,8 @@ import '@mantine/notifications/styles.css';
 import './App.css';
 import { APP_ROUTES } from './constant';
 import { store } from './store/store';
+import ChatList from './pages/ChatList';
+import ChatRoomPage from './pages/ChatRoomPage';
 
 const AuthoPage = lazy(() => import('./routes/AuthRoute'));
 const UserRoute = lazy(() => import('./routes/UserRoute'));
@@ -61,6 +63,8 @@ function App() {
                 <Route path={APP_ROUTES.LOGIN} element={<AuthoPage />} />
                 <Route path={APP_ROUTES.REGISTER} element={<AuthoPage />} />
                 <Route path="/*" element={<UserRoute />} />
+                <Route path="/chat" element={<ChatList />} />
+                <Route path="/chat/:startupId" element={<ChatRoomPage />} />
               </Routes>
             </main>
           </div>
