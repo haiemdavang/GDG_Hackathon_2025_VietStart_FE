@@ -1,9 +1,10 @@
-import { Calendar, Lightbulb, TrendingUp, Users } from 'lucide-react';
+import { Calendar, Lightbulb, TrendingUp, Users, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryService from '../../service/CategoryService';
 import type { CategoryDto } from '../../types/CategoryType';
 import Category from './Category';
+import { APP_ROUTES } from '../../constant';
 
 interface TrendingIdea {
     title: string;
@@ -78,6 +79,14 @@ export default function Sidebar({ trendingIdeas }: SidebarProps) {
                 >
                     <Lightbulb className="w-5 h-5" />
                     <span className={isActive('/suggestion') ? 'font-medium' : ''}>Đề xuất dự án phù hợp</span>
+                </button>
+                <button
+                    onClick={() => navigate(APP_ROUTES.CHAT_LIST)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left ${isActive('/chat') ? 'bg-yellow-400 text-white' : 'hover:bg-gray-50'
+                        }`}
+                >
+                    <MessageCircle className="w-5 h-5" />
+                    <span className={isActive('/chat') ? 'font-medium' : ''}>Tin nhắn nhóm</span>
                 </button>
             </nav>
 

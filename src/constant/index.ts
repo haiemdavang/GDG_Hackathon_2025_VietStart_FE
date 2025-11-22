@@ -51,6 +51,8 @@ export const APP_ROUTES = {
   SUGGESTION: '/suggestion',
   MY_POSTS: '/my-posts',
   FIND_MEMBER: '/find-member',
+  CHAT_LIST: '/chat',
+  CHAT_ROOM: (startupId: number) => `/chat/${startupId}`,
 
   ADMIN: {
     BASE: '/admin/*',
