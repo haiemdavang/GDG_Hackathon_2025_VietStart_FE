@@ -11,7 +11,7 @@ import './App.css';
 import { APP_ROUTES } from './constant';
 // import { store } from './store/store';
 
-// const AuthoPage = lazy(() => import('./routes/AuthRoute'));
+const AuthoPage = lazy(() => import('./routes/AuthRoute'));
 // const UserRoute = lazy(() => import('./routes/UserRoute'));
 
 function App() {
@@ -51,22 +51,22 @@ function App() {
 
 
   return (
-    <Provider store={store}>
+    // <Provider  store={undefined /* store */}>
       <MantineProvider theme={theme}>
         <Notifications position="bottom-right" zIndex={1000} />
         <BrowserRouter>
           <div className="min-h-screen flex flex-col">
             <main className="flex-1">
               <Routes>
-                {/* <Route path={APP_ROUTES.LOGIN} element={<AuthoPage />} />
+                <Route path={APP_ROUTES.LOGIN} element={<AuthoPage />} />
                 <Route path={APP_ROUTES.REGISTER} element={<AuthoPage />} />
-                <Route path="/*" element={<UserRoute />} /> */}
+                {/* <Route path="/*" element={<UserRoute />} /> */}
               </Routes>
             </main>
           </div>
         </BrowserRouter>
       </MantineProvider>
-    </Provider>
+    // </Provider>
   );
 }
 
