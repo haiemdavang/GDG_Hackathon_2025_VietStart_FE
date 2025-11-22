@@ -10,6 +10,9 @@ export interface RegisterRequest {
   email: string;
   password: string;
   confirmPassword: string;
+  skills?: string;
+  rolesInStartup?: string;
+  categoryInvests?: string;
 }
 
 export interface ProfileRequest {

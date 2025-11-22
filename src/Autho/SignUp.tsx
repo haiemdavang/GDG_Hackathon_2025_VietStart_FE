@@ -4,6 +4,7 @@ import {
   Checkbox,
   Divider,
   Group,
+  MultiSelect,
   PasswordInput,
   Stack,
   Text,
@@ -18,16 +19,56 @@ import { Link, useNavigate } from 'react-router-dom';
 import AuthService from '../service/AuthService';
 import showErrorNotification from '../Toast/NotificationError';
 import showSuccessNotification from '../Toast/NotificationSuccess';
-import { validateAgreeTerms, validateConfirmPassword, validateEmail, validatePassword } from '../untils/ValidateInput';
 import type { RegisterRequest } from '../types/UserType';
+import { validateAgreeTerms, validateConfirmPassword, validateEmail, validatePassword } from '../untils/ValidateInput';
 
 interface SignUpFormValues {
   fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
+  skills: string[];
+  rolesInStartup: string[];
+  categoryInvests: string[];
   agreeTerms: boolean;
 }
+
+const SKILLS_OPTIONS = [
+  { value: 'react', label: 'React' },
+  { value: 'nodejs', label: 'Node.js' },
+  { value: 'python', label: 'Python' },
+  { value: 'java', label: 'Java' },
+  { value: 'uiux', label: 'UI/UX Design' },
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'sales', label: 'Sales' },
+  { value: 'business', label: 'Business Development' },
+  { value: 'finance', label: 'Finance' },
+  { value: 'product', label: 'Product Management' },
+];
+
+const ROLES_OPTIONS = [
+  { value: 'founder', label: 'Founder/Co-founder' },
+  { value: 'developer', label: 'Developer' },
+  { value: 'designer', label: 'Designer' },
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'sales', label: 'Sales' },
+  { value: 'product_manager', label: 'Product Manager' },
+  { value: 'business_analyst', label: 'Business Analyst' },
+  { value: 'investor', label: 'Investor' },
+];
+
+const CATEGORY_OPTIONS = [
+  { value: 'fintech', label: 'Fintech' },
+  { value: 'ecommerce', label: 'E-commerce' },
+  { value: 'healthtech', label: 'Healthtech' },
+  { value: 'edtech', label: 'Edtech' },
+  { value: 'saas', label: 'SaaS' },
+  { value: 'ai', label: 'AI/ML' },
+  { value: 'blockchain', label: 'Blockchain' },
+  { value: 'iot', label: 'IoT' },
+  { value: 'greentech', label: 'Green Tech' },
+  { value: 'social', label: 'Social Network' },
+];
 
 export function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,22 +80,20 @@ export function SignUp() {
       email: '',
       password: '',
       confirmPassword: '',
+      skills: [],
+      rolesInStartup: [],
+      categoryInvests: [],
       agreeTerms: false,
     },
     validate: {
       fullName: (value) => (value ? null : 'Họ tên là bắt buộc'),
-      email: (value) => {
-        return validateEmail(value);
-      },
-      password: (value) => {
-        return validatePassword(value);
-      },
-      confirmPassword: (value, values) => {
-        return validateConfirmPassword(values.password, value);
-      },
-      agreeTerms: (value) => {
-        return validateAgreeTerms(value);
-      },
+      email: (value) => validateEmail(value),
+      password: (value) => validatePassword(value),
+      confirmPassword: (value, values) => validateConfirmPassword(values.password, value),
+      skills: (value) => (value.length > 0 ? null : 'Vui lòng chọn ít nhất 1 kỹ năng'),
+      rolesInStartup: (value) => (value.length > 0 ? null : 'Vui lòng chọn ít nhất 1 vai trò'),
+      categoryInvests: (value) => (value.length > 0 ? null : 'Vui lòng chọn ít nhất 1 lĩnh vực'),
+      agreeTerms: (value) => validateAgreeTerms(value),
     },
   });
 
@@ -64,6 +103,9 @@ export function SignUp() {
       email: values.email,
       password: values.password,
       confirmPassword: values.confirmPassword,
+      skills: values.skills.join(','),
+      rolesInStartup: values.rolesInStartup.join(','),
+      categoryInvests: values.categoryInvests.join(','),
     };
 
     setIsLoading(true);
@@ -76,14 +118,7 @@ export function SignUp() {
           'Đăng nhập để trải nghiệm nhé.'
         );
 
-        // Optionally store tokens if returned
-        if (response.data.accessToken) {
-          localStorage.setItem('accessToken', response.data.accessToken);
-        }
-        if (response.data.refreshToken) {
-          localStorage.setItem('refreshToken', response.data.refreshToken);
-        }
-
+  
         // Navigate to login or home page
         setTimeout(() => {
           navigate('/login');
@@ -104,16 +139,17 @@ export function SignUp() {
 
   const handleGoogleLogin = () => {
     showErrorNotification('Chức năng đang phát triển', 'Đăng ký bằng Google sẽ sớm được ra mắt!');
-  }
+  };
+
   return (
     <motion.div
-      className="w-1/2 bg-white flex items-center justify-center p-8"
+      className="w-1/2 bg-white flex items-center justify-center p-8 overflow-y-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="w-full max-w-md"
+        className="w-full max-w-md py-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -128,9 +164,7 @@ export function SignUp() {
               label="Họ và tên"
               placeholder="Nhập tên đây nha thượng đế"
               required
-              value={form.values.fullName}
-              onChange={(event) => form.setFieldValue('fullName', event.currentTarget.value)}
-              error={form.errors.fullName}
+              {...form.getInputProps('fullName')}
               size="md"
             />
 
@@ -138,9 +172,7 @@ export function SignUp() {
               label="Email"
               placeholder="email nè"
               required
-              value={form.values.email}
-              onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-              error={form.errors.email}
+              {...form.getInputProps('email')}
               size="md"
             />
 
@@ -148,27 +180,54 @@ export function SignUp() {
               label="Mật khẩu"
               placeholder="Ngày sinh người yêu cũ ha -.-"
               required
-              value={form.values.password}
-              onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-              error={form.errors.password}
+              {...form.getInputProps('password')}
               size="md"
             />
 
             <PasswordInput
               label="Xác nhận mật khẩu"
-              placeholder="Nhang lại mật khẩu của bạn"
+              placeholder="Nhập lại mật khẩu của bạn"
               required
-              value={form.values.confirmPassword}
-              onChange={(event) => form.setFieldValue('confirmPassword', event.currentTarget.value)}
-              error={form.errors.confirmPassword}
+              {...form.getInputProps('confirmPassword')}
               size="md"
+            />
+
+            <MultiSelect
+              label="Kỹ năng"
+              placeholder="Chọn kỹ năng của bạn"
+              data={SKILLS_OPTIONS}
+              searchable
+              required
+              {...form.getInputProps('skills')}
+              size="md"
+              maxDropdownHeight={200}
+            />
+
+            <MultiSelect
+              label="Vai trò trong Startup"
+              placeholder="Bạn quan tâm đến vai trò nào?"
+              data={ROLES_OPTIONS}
+              searchable
+              required
+              {...form.getInputProps('rolesInStartup')}
+              size="md"
+              maxDropdownHeight={200}
+            />
+
+            <MultiSelect
+              label="Lĩnh vực quan tâm"
+              placeholder="Chọn lĩnh vực đầu tư/làm việc"
+              data={CATEGORY_OPTIONS}
+              searchable
+              required
+              {...form.getInputProps('categoryInvests')}
+              size="md"
+              maxDropdownHeight={200}
             />
 
             <Checkbox
               label="Tôi đồng ý với điều khoản sử dụng và chính sách bảo mật"
-              checked={form.values.agreeTerms}
-              onChange={(event) => form.setFieldValue('agreeTerms', event.currentTarget.checked)}
-              error={form.errors.agreeTerms}
+              {...form.getInputProps('agreeTerms', { type: 'checkbox' })}
             />
 
             <Button
@@ -190,7 +249,7 @@ export function SignUp() {
             leftSection={<FaGoogle size={16} />}
             variant="outline"
             className="border-gray-300"
-            onClick={() => handleGoogleLogin()}
+            onClick={handleGoogleLogin}
           >
             Google
           </Button>
@@ -204,7 +263,7 @@ export function SignUp() {
           </Button>
         </Group>
 
-        <Text className="text-center  text-gray-600">
+        <Text className="text-center text-gray-600 mt-4">
           Đã có tài khoản?{' '}
           <Link to="/login" className="text-primary font-medium hover:underline">
             Đăng nhập

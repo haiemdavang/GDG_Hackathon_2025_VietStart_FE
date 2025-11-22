@@ -29,7 +29,7 @@ export default function VietStartLayout() {
   const [hasMore, setHasMore] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showFivePartModal, setShowFivePartModal] = useState(false);
-  const [showFindMemberModal, setShowFindMemberModal] = useState(false);
+  const [showFindMemberModal, setShowFindMemberModal] = useState(true);
   const [initialPostData, setInitialPostData] = useState<CreatePostPayload | null>(null);
 
   const observerTarget = useRef<HTMLDivElement>(null);
