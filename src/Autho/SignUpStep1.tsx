@@ -21,7 +21,7 @@ export function SignUpStep1({ form }: SignUpStep1Props) {
     <Stack gap="md" mt="md">
       <TextInput
         label="Họ và tên"
-        placeholder="Nhập tên đây nha thượng đế"
+        placeholder="Nhập tên của bạn"
         required
         {...form.getInputProps('fullName')}
         size="md"
@@ -29,7 +29,7 @@ export function SignUpStep1({ form }: SignUpStep1Props) {
 
       <TextInput
         label="Email"
-        placeholder="email nè"
+        placeholder="Nhập email của bạn"
         required
         {...form.getInputProps('email')}
         size="md"
@@ -37,7 +37,7 @@ export function SignUpStep1({ form }: SignUpStep1Props) {
 
       <PasswordInput
         label="Mật khẩu"
-        placeholder="Ngày sinh người yêu cũ ha -.-"
+        placeholder="Nhập mật khẩu của bạn"
         required
         {...form.getInputProps('password')}
         size="md"

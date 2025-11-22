@@ -1,5 +1,5 @@
 import { Button, Group, Image, Paper, RingProgress, Stack, Text, Textarea } from '@mantine/core';
-import { Bot, Check, X } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { useState } from 'react';
 
 interface PostSectionItemProps {
@@ -44,16 +44,16 @@ export default function PostSectionItem({
         }
     };
 
-    const handleAcceptSuggestion = () => {
-        if (suggestion) {
-            onChange(suggestion);
-            setSuggestion('');
-        }
-    };
+    // const handleAcceptSuggestion = () => {
+    //     if (suggestion) {
+    //         onChange(suggestion);
+    //         setSuggestion('');
+    //     }
+    // };
 
-    const handleRejectSuggestion = () => {
-        setSuggestion('');
-    };
+    // const handleRejectSuggestion = () => {
+    //     setSuggestion('');
+    // };
 
     return (
         <Paper p="md" radius="md" withBorder bg="gray.0">
@@ -106,7 +106,7 @@ export default function PostSectionItem({
                             <Text size="sm" c="blue.9" style={{ whiteSpace: 'pre-wrap' }}>
                                 {suggestion}
                             </Text>
-                            <Group gap="xs" justify="flex-end">
+                            {/* <Group gap="xs" justify="flex-end">
                                 <Button
                                     size="xs"
                                     variant="filled"
@@ -125,7 +125,7 @@ export default function PostSectionItem({
                                 >
                                     Bỏ qua
                                 </Button>
-                            </Group>
+                            </Group> */}
                         </Stack>
                     </Paper>
                 )}

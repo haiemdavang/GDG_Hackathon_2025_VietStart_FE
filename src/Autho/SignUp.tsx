@@ -120,16 +120,16 @@ export function SignUp() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Title order={1} className="text-3xl font-bold mb-6 text-center text-slate-800">
+        <Title order={1} className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center text-slate-800">
           Đăng ký
         </Title>
 
-        <Stepper active={active} onStepClick={setActive} mb="xl">
-          <Stepper.Step label="Bước 1" description="Thông tin tài khoản">
+        <Stepper active={active} onStepClick={setActive} mb="xl" size="xs" className="md:text-base">
+          <Stepper.Step label="Bước 1" description="Thông tin tài khoản" className="text-xs md:text-sm">
             <SignUpStep1 form={form} />
           </Stepper.Step>
 
-          <Stepper.Step label="Bước 2" description="Thông tin cá nhân">
+          <Stepper.Step label="Bước 2" description="Thông tin cá nhân" className="text-xs md:text-sm">
             <SignUpStep2 form={form} />
           </Stepper.Step>
         </Stepper>

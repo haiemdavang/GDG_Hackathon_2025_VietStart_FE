@@ -31,9 +31,9 @@ export default function Layout({ children }: LayoutProps) {
           navigate(APP_ROUTES.LOGIN);
         }
       } else {
-        if (!user) {
-          navigate(APP_ROUTES.LOGIN);
-        }
+        // if (!user) {
+        //   navigate(APP_ROUTES.LOGIN);
+        // }
       }
     };
 
