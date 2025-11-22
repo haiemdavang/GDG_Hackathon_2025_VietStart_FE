@@ -17,11 +17,11 @@ export default function Profile() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
-    fullName: 'Nguyễn Văn An',
-    location: 'Hà Nội, Việt Nam',
-    bio: 'Là một lập trình viên đam mê công nghệ, luôn tìm kiếm những ý tưởng sáng tạo để xây dựng các sản phẩm có ích cho cộng đồng. Yêu thích JavaScript, React và các công nghệ web hiện đại.',
-    avatar: 'https://i.pravatar.cc/150?img=12',
-    dob: '1995-03-15',
+    fullName: '',
+    location: '',
+    bio: '',
+    avatar: '',
+    dob: '',
   });
   const [userStartups, setUserStartups] = useState<StartUpDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,30 +31,38 @@ export default function Profile() {
   const isOwnProfile = !userId || userId === currentUser?.id;
 
   useEffect(() => {
-    console.log('User startups updated:', userStartups);
-  }, [userStartups])
-
-  useEffect(() => {
-    const fetchUserStartups = async () => {
-      if (!targetUserId) return;
+    const fetchUserData = async () => {
+      setIsLoading(true);
 
       try {
-        setIsLoading(true);
-        const response = await StartupService.getUserStartups(targetUserId);
-        setUserStartups(response.data);
+        // If viewing own profile and no userId in params, use currentUser data
+        if (isOwnProfile && currentUser) {
+          setProfileData({
+            fullName: currentUser.fullName || '',
+            location: currentUser.location || '',
+            bio: currentUser.bio || '',
+            avatar: currentUser.avatar || '',
+            dob: currentUser.dob || '',
+          });
+        }
+
+        // Fetch startups for target user
+        if (targetUserId) {
+          const response = await StartupService.getUserStartups(targetUserId);
+          setUserStartups(response.data);
+        }
       } catch (error) {
-        console.error('Error fetching user startups:', error);
+        console.error('Error fetching user data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchUserStartups();
-  }, [targetUserId]);
+    fetchUserData();
+  }, [targetUserId, currentUser, isOwnProfile]);
 
   const handleSaveProfile = (data: ProfileData) => {
     setProfileData(data);
-    // TODO: Call API to update profile
     console.log('Saving profile:', data);
   };
 

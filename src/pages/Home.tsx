@@ -17,7 +17,7 @@ import StartupService from '../service/StartupService';
 import showErrorNotification from '../Toast/NotificationError';
 import showSuccessNotification from '../Toast/NotificationSuccess';
 import type { PointResponse } from '../types/GeminiType';
-import type { CreateStartUpDto, StartUpDto } from '../types/StartupType';
+import type { CreateStartUpDto, StartUpDto, UserSuggestionDto } from '../types/StartupType';
 
 export default function VietStartLayout() {
   const [searchParams] = useSearchParams();
@@ -29,8 +29,9 @@ export default function VietStartLayout() {
   const [hasMore, setHasMore] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showFivePartModal, setShowFivePartModal] = useState(false);
-  const [showFindMemberModal, setShowFindMemberModal] = useState(true);
+  const [showFindMemberModal, setShowFindMemberModal] = useState(false);
   const [initialPostData, setInitialPostData] = useState<CreatePostPayload | null>(null);
+  const [createdStartupId, setCreatedStartupId] = useState<number | null>(null);
 
   const observerTarget = useRef<HTMLDivElement>(null);
   const pageSize = 10;
@@ -138,6 +139,10 @@ export default function VietStartLayout() {
         'Tạo bài viết thành công',
         'Ý tưởng của bạn đã được đăng!'
       );
+
+      // Show FindMemberModal after successful post creation
+      setCreatedStartupId(response.data.id);
+      setShowFindMemberModal(true);
     } catch (error: any) {
       showErrorNotification(
         'Lỗi tạo bài viết',
@@ -150,14 +155,14 @@ export default function VietStartLayout() {
     console.log('AI Evaluate payload:', payload);
   };
 
-  const handleSelectMember = (member: MemberProfile) => {
+  const handleSelectMember = (member: UserSuggestionDto) => {
     console.log('Selected member:', member);
     showSuccessNotification(
       'Đã chọn thành viên',
       `Bạn đã chọn ${member.fullName}`
     );
     // TODO: Add logic to invite member
-  };
+  };  
 
   // Reset when categoryId changes
   useEffect(() => {
@@ -277,7 +282,11 @@ export default function VietStartLayout() {
       />
       <FindMemberModal
         isOpen={showFindMemberModal}
-        onClose={() => setShowFindMemberModal(false)}
+        onClose={() => {
+          setShowFindMemberModal(false);
+          setCreatedStartupId(null);
+        }}
+        startupId={createdStartupId}
         onSelectMember={handleSelectMember}
       />
     </Layout>

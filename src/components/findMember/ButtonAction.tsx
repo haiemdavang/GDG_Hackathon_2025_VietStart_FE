@@ -10,10 +10,9 @@ export default function ButtonAction({ onAccept, onReject, disabled = false }: B
     return (
         <div className="flex justify-center gap-4">
             <Button
-                size="lg"
+                size="md"
                 radius="xl"
-                variant="filled"
-                color="gray"
+                variant="outline"
                 onClick={onReject}
                 disabled={disabled}
                 className="hover:scale-105 active:scale-95 transition-transform shadow-xl"
@@ -23,10 +22,9 @@ export default function ButtonAction({ onAccept, onReject, disabled = false }: B
             </Button>
 
             <Button
-                size="lg"
+                size="md"
                 radius="xl"
                 variant="filled"
-                color="yellow"
                 onClick={onAccept}
                 disabled={disabled}
                 className="hover:scale-105 active:scale-95 transition-transform shadow-xl"

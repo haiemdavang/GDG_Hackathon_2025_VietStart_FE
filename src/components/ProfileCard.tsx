@@ -1,6 +1,7 @@
 import { Avatar, Button, Card, Divider, Group, Stack, Text } from '@mantine/core';
 import { Briefcase, Calendar, Facebook, Github, Instagram, Link2, Linkedin, Mail, MapPin, Twitter } from 'lucide-react';
 import type { ProfileData } from '../types/profile.types';
+import { useEffect } from 'react';
 
 interface ProfileCardProps {
     profileData: ProfileData;
@@ -37,6 +38,9 @@ export default function ProfileCard({
     showEditButton = true,
     socialLinks
 }: ProfileCardProps) {
+    useEffect(() => {
+        console.log('Profile Data:', profileData);
+    }, [profileData]);
     return (
         <Card shadow="sm" padding="lg" radius="md" >
             <Stack gap="lg">

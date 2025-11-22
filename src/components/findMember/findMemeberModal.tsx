@@ -1,22 +1,58 @@
-import { ActionIcon, Button, Modal, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Button, Loader, Modal, Stack, Text, Title, Box } from '@mantine/core';
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { memberProfiles, type MemberProfile } from '../../data/ProfileData';
+import { useEffect, useRef, useState } from 'react';
+import StartupService from '../../service/StartupService';
+import TeamStartupService from '../../service/TeamStartupService';
+import showErrorNotification from '../../Toast/NotificationError';
+import showSuccessNotification from '../../Toast/NotificationSuccess';
+import type {  SuggestUsersResponse, UserSuggestionDto } from '../../types/StartupType';
 import ButtonAction from './ButtonAction';
 import CartMember from './CartMember';
 
 interface FindMemberModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSelectMember?: (member: MemberProfile) => void;
+    startupId?: number | null;
+    onSelectMember?: (member: UserSuggestionDto) => void;
 }
 
-export default function FindMemberModal({ isOpen, onClose, onSelectMember }: FindMemberModalProps) {
+export default function FindMemberModal({ isOpen, onClose, startupId, onSelectMember }: FindMemberModalProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [suggestedUsers, setSuggestedUsers] = useState<UserSuggestionDto[]>([]);
+    const [isHovering, setIsHovering] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const filteredMembers = memberProfiles.filter(member => member.isAvailable);
+    useEffect(() => {
+        if (isOpen && startupId) {
+            fetchSuggestedUsers();
+        } 
+    }, [isOpen, startupId]);
+
+    const fetchSuggestedUsers = async () => {
+        if (!startupId) return;
+
+        setIsLoading(true);
+        try {
+            const response = await StartupService.getSuggestedUsers(startupId);
+            const suggestionsData: SuggestUsersResponse = response.data;
+
+            setSuggestedUsers(suggestionsData.suggestions);
+            setCurrentIndex(0);
+        } catch (error: any) {
+            console.error('Error fetching suggested users:', error);
+            showErrorNotification(
+                'Lỗi tải gợi ý',
+                error.message || 'Không thể tải danh sách thành viên được gợi ý'
+            );
+            setSuggestedUsers([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const filteredMembers = suggestedUsers;
     const currentMember = filteredMembers[currentIndex];
 
     const scrollToTop = () => {
@@ -25,20 +61,52 @@ export default function FindMemberModal({ isOpen, onClose, onSelectMember }: Fin
         }
     };
 
-    const handleSwipe = (direction: 'left' | 'right') => {
+    const handleSwipe = async (direction: 'left' | 'right') => {
         setSwipeDirection(direction);
 
-        setTimeout(() => {
-            if (direction === 'right' && currentMember && onSelectMember) {
-                onSelectMember(currentMember);
-            }
+        if (direction === 'right' && currentMember && startupId) {
+            try {
+                // Gọi API invite user vào startup
+                await TeamStartupService.inviteStartUp(startupId, currentMember.userId);
+           
+                showSuccessNotification(
+                    'Gửi lời mời thành công',
+                    `Đã gửi lời mời tham gia startup đến ${currentMember.fullName}`
+                );
+                
+                // Gọi callback nếu có
+                if (onSelectMember) {
+                    onSelectMember(currentMember);
+                }
 
-            if (currentIndex < filteredMembers.length - 1) {
-                setCurrentIndex(prev => prev + 1);
-                scrollToTop();
+                // Chỉ chuyển sang user tiếp theo khi thành công
+                setTimeout(() => {
+                    if (currentIndex < filteredMembers.length - 1) {
+                        setCurrentIndex(prev => prev + 1);
+                        scrollToTop();
+                    }
+                    setSwipeDirection(null);
+                }, 300);
+
+            } catch (error: any) {
+                console.error('Error inviting user:', error);
+                showErrorNotification(
+                    'Lỗi gửi lời mời',
+                    error.message || 'Không thể gửi lời mời tham gia'
+                );
+                // Reset swipe direction nếu lỗi
+                setSwipeDirection(null);
             }
-            setSwipeDirection(null);
-        }, 300);
+        } else if (direction === 'left') {
+            // Reject - chuyển sang user tiếp theo
+            setTimeout(() => {
+                if (currentIndex < filteredMembers.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    scrollToTop();
+                }
+                setSwipeDirection(null);
+            }, 300);
+        }
     };
 
     const handlePrevious = () => {
@@ -59,92 +127,92 @@ export default function FindMemberModal({ isOpen, onClose, onSelectMember }: Fin
         <Modal
             opened={isOpen}
             onClose={onClose}
-            size="80vw"
+            size="md"
             centered
-            padding={2}
-            title={
-                <Title order={3}>
-                    Tìm kiếm thành viên ({currentIndex + 1}/{filteredMembers.length})
-                </Title>
-            }
+            padding={0}
+            withCloseButton={false}
             styles={{
                 body: {
                     padding: 0,
                     overflow: 'hidden',
                     position: 'relative',
-                    height: '80vh'
+                    minHeight: '500px',
+                    maxHeight: '600px'
                 },
                 header: {
-                    padding: '1rem 1.5rem',
-                    borderBottom: '1px solid #e9ecef',
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 10,
-                    backgroundColor: 'white'
-                },
-                content: {
-                    // height: '80vh'
+                    display: 'none'
                 }
             }}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
         >
             {/* Previous Button - Fixed Left */}
-            {currentMember && (
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20">
-                    {currentIndex > 0 ? (
-                        <ActionIcon
-                            size={40}
-                            radius="xl"
-                            variant="filled"
-                            onClick={handlePrevious}
-                            className="hover:scale-110 active:scale-95 transition-transform shadow-xl"
-                            style={{ backgroundColor: 'white', color: '#6b7280' }}
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </ActionIcon>
-                    ) : (
-                        <div className="w-10 h-10"></div>
-                    )}
-                </div>
+            {currentMember && isHovering && currentIndex > 0 && (
+                <Box pos="absolute" left={8} top="50%" style={{ transform: 'translateY(-50%)', zIndex: 20 }}>
+                    <ActionIcon
+                        size={36}
+                        radius="xl"
+                        variant="filled"
+                        onClick={handlePrevious}
+                        style={{ 
+                            backgroundColor: 'white', 
+                            color: '#6b7280',
+                            transition: 'all 0.2s',
+                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                            opacity: isHovering ? 1 : 0
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        <ChevronLeft size={18} />
+                    </ActionIcon>
+                </Box>
             )}
 
             {/* Next Button - Fixed Right */}
-            {currentMember && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
-                    {currentIndex < filteredMembers.length - 1 ? (
-                        <ActionIcon
-                            size={40}
-                            radius="xl"
-                            variant="filled"
-                            onClick={handleNext}
-                            className="hover:scale-110 active:scale-95 transition-transform shadow-xl"
-                            style={{ backgroundColor: 'white', color: '#6b7280' }}
-                        >
-                            <ChevronRight className="w-5 h-5" />
-                        </ActionIcon>
-                    ) : (
-                        <div className="w-10 h-10"></div>
-                    )}
-                </div>
+            {currentMember && isHovering && currentIndex < filteredMembers.length - 1 && (
+                <Box pos="absolute" right={8} top="50%" style={{ transform: 'translateY(-50%)', zIndex: 20 }}>
+                    <ActionIcon
+                        size={36}
+                        radius="xl"
+                        variant="filled"
+                        onClick={handleNext}
+                        style={{ 
+                            backgroundColor: 'white', 
+                            color: '#6b7280',
+                            transition: 'all 0.2s',
+                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                            opacity: isHovering ? 1 : 0
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        <ChevronRight size={18} />
+                    </ActionIcon>
+                </Box>
             )}
 
-            <div ref={scrollRef} className="overflow-y-auto h-full">
-                {filteredMembers.length === 0 ? (
+            <Box ref={scrollRef} style={{ overflowY: 'auto', height: '100%' }}>
+                {isLoading ? (
+                    <Stack align="center" justify="center" style={{ minHeight: '400px' }}>
+                        <Loader size="lg" color="yellow" />
+                        <Text c="dimmed" mt="md">Đang tìm kiếm thành viên phù hợp...</Text>
+                    </Stack>
+                ) : filteredMembers.length === 0 ? (
                     <Stack align="center" py="xl" px="lg">
                         <Text c="dimmed">Không có thành viên nào</Text>
                     </Stack>
                 ) : currentMember ? (
-                    <Stack gap="lg" align="center" p="lg">
-                        <div className="w-full  mx-auto">
-                            <CartMember
-                                member={currentMember}
-                                swipeDirection={swipeDirection}
-                            />
-                        </div>
-                    </Stack>
+                    <Box style={{  display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <CartMember
+                            member={currentMember}
+                            swipeDirection={swipeDirection}
+                        />
+                    </Box>
                 ) : (
                     <Stack align="center" py="xl" px="lg">
                         <ActionIcon size={80} radius="xl" variant="light" color="green">
-                            <Heart className="w-10 h-10 fill-green-500" />
+                            <Heart size={40} fill="currentColor" />
                         </ActionIcon>
                         <Title order={3}>Đã xem hết!</Title>
                         <Text c="dimmed">Bạn đã xem qua tất cả thành viên</Text>
@@ -153,14 +221,19 @@ export default function FindMemberModal({ isOpen, onClose, onSelectMember }: Fin
                         </Button>
                     </Stack>
                 )}
-            </div>
+            </Box>
 
             {/* Button Action - Fixed at Bottom */}
             {currentMember && (
-                <div
-                    className="absolute bottom-0 left-0 right-0 pb-6 pt-2"
+                <Box
+                    pos="absolute"
+                    bottom={0}
+                    left={0}
+                    right={0}
+                    p="md"
                     style={{
-                        background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 30%, transparent 100%)'
+                            backgroundColor: 'white',
+                            borderTop: '1px solid #e9ecef'
                     }}
                 >
                     <ButtonAction
@@ -168,7 +241,7 @@ export default function FindMemberModal({ isOpen, onClose, onSelectMember }: Fin
                         onReject={() => handleSwipe('left')}
                         disabled={swipeDirection !== null}
                     />
-                </div>
+                </Box>
             )}
         </Modal>
     );
