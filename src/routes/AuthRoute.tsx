@@ -1,23 +1,14 @@
-import { Button } from '@mantine/core';
-import { FiArrowLeft } from 'react-icons/fi';
-import { useLocation, useNavigate } from 'react-router-dom';
+
+import { useLocation } from 'react-router-dom';
 import { SignIn } from '../Autho/SignIn';
 import { SignUp } from '../Autho/SignUp';
 
 export function AuthoPage() {
   const location = useLocation();
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-[90vh] font-['Inter'] overflow-hidden relative bg-white">
-      <span
-        onClick={() => navigate("/")}
-        className='m-4 inline-block absolute top-5 left-5 cursor-pointer z-50'
-      >
-        {location.pathname === "/login" ? <></> : <Button leftSection={<FiArrowLeft size={20} />} variant='light'>
-          Quay lại
-        </Button>}  
-      </span>
+      
 
       <div className={`w-[100vw] h-[100vh] flex [&>*]:flex-shrink-0 duration-1000 transition-all `}>
         {location.pathname === "/login" ? <SignIn /> : (
