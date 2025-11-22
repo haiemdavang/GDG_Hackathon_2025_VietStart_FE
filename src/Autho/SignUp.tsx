@@ -15,11 +15,8 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FaFacebook, FaGoogle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthService from '../service/AuthService';
 import showErrorNotification from '../Toast/NotificationError';
 import showSuccessNotification from '../Toast/NotificationSuccess';
-import type { RegisterRequest } from '../types/UserType';
-import { validateAgreeTerms, validateConfirmPassword, validateEmail, validatePassword } from '../untils/ValidateInput';
 
 interface SignUpFormValues {
   fullName: string;
@@ -41,65 +38,13 @@ export function SignUp() {
       confirmPassword: '',
       agreeTerms: false,
     },
-    validate: {
-      fullName: (value) => (value ? null : 'Họ tên là bắt buộc'),
-      email: (value) => {
-        return validateEmail(value);
-      },
-      password: (value) => {
-        return validatePassword(value);
-      },
-      confirmPassword: (value, values) => {
-        return validateConfirmPassword(values.password, value);
-      },
-      agreeTerms: (value) => {
-        return validateAgreeTerms(value);
-      },
-    },
+    
   });
 
   const handleSubmit = async (values: SignUpFormValues) => {
-    const registerData: RegisterRequest = {
-      fullName: values.fullName,
-      email: values.email,
-      password: values.password,
-      confirmPassword: values.confirmPassword,
-    };
+ 
 
-    setIsLoading(true);
-    try {
-      const response = await AuthService.register(registerData);
-
-      if (response.status === 200 || response.status === 201) {
-        showSuccessNotification(
-          'Đăng ký thành công!',
-          'Đăng nhập để trải nghiệm nhé.'
-        );
-
-        // Optionally store tokens if returned
-        if (response.data.accessToken) {
-          localStorage.setItem('accessToken', response.data.accessToken);
-        }
-        if (response.data.refreshToken) {
-          localStorage.setItem('refreshToken', response.data.refreshToken);
-        }
-
-        // Navigate to login or home page
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      }
-    } catch (error: any) {
-      console.error('Registration error:', error);
-
-      const errorMessage = error.response?.data?.message
-        || error.response?.data?.errors?.[0]
-        || 'Đã có lỗi xảy ra. Vui lòng thử lại!';
-
-      showErrorNotification('Đăng ký thất bại', errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    
   };
 
   const handleGoogleLogin = () => {
