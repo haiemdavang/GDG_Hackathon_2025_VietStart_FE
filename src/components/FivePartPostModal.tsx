@@ -48,27 +48,7 @@ export default function FivePartPostModal({
   const [evaluationComments, setEvaluationComments] = useState<Record<string, string>>({});
   const [overallSummary, setOverallSummary] = useState<string>('');
 
-  useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        // Pre-fill form with formatted data from Gemini
-        setFormValues({
-          team: initialData.team || '',
-          idea: initialData.idea || '',
-          prototype: initialData.prototype || '',
-          plan: initialData.plan || '',
-          relationship: initialData.relationships || '',
-        });
-      } else {
-        // Reset form if no initial data
-        setFormValues({
-          team: '',
-          idea: '',
-          prototype: '',
-          plan: '',
-          relationship: ''
-        });
-      }
+  
 
       // Set initial score if provided
       if (initialScore) {

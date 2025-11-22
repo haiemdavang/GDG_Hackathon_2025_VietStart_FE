@@ -44,70 +44,7 @@ interface StartUpCardProps {
 }
 
 export default function StartUpCard(props: StartUpCardProps) {
-    const {
-        startup,
-        commentsList = [],
-        isOwner = false,
-        onVisibilityChange,
-        isShared = false,
-        sharedBy,
-        sharedByAvatar,
-        sharedTime,
-        shareComment
-    } = props;
-
-    // Extract data from startup or use legacy props
-    const id = startup?.id ?? props.id ?? 0;
-    const author = startup?.userFullName ?? props.author ?? '';
-    const userId = startup?.userId;
-    const time = startup ? formatTimeAgo(new Date(startup.createdAt)) : (props.time ?? '');
-    const title = startup?.idea ?? props.title ?? '';
-    const score = startup?.point ?? props.score ?? 0;
-    const category = startup?.categoryName ?? props.category ?? 'Uncategorized';
-    const visibility = startup ? startup.privacy === 1 : (props.isPublic ?? true);
-    const avatarUrl = props.avatarUrl;
-
-    const evaluations = startup ? [
-        {
-            title: 'Đội ngũ',
-            score: startup.teamPoint ?? 0,
-            maxScore: 20,
-            description: startup.team
-        },
-        {
-            title: 'Ý tưởng',
-            score: startup.ideaPoint ?? 0,
-            maxScore: 20,
-            description: startup.idea
-        },
-        {
-            title: 'Nguyên mẫu',
-            score: startup.prototypePoint ?? 0,
-            maxScore: 30,
-            description: startup.prototype
-        },
-        {
-            title: 'Kế hoạch',
-            score: startup.planPoint ?? 0,
-            maxScore: 10,
-            description: startup.plan
-        },
-        {
-            title: 'Mối quan hệ',
-            score: startup.relationshipPoint ?? 0,
-            maxScore: 20,
-            description: startup.relationship
-        },
-    ] : (props.evaluations ?? []);
-
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [showComments, setShowComments] = useState(false);
-    const [commentsData, setCommentsData] = useState<CommentData[]>(commentsList);
-    const [isLoadingComments, setIsLoadingComments] = useState(false);
-    const [isPublicState, setIsPublicState] = useState(visibility);
-    const [showShareModal, setShowShareModal] = useState(false);
-    const [showApplyModal, setShowApplyModal] = useState(false);
-    const [likesCount] = useState(props.likes ?? 0);
+    
 
     const currentUser = useSelector((state: RootState) => state.auth.user);
 

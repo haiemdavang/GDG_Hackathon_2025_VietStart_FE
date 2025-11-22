@@ -34,35 +34,7 @@ export default function Profile() {
     console.log('User startups updated:', userStartups);
   }, [userStartups])
 
-  useEffect(() => {
-    const fetchUserStartups = async () => {
-      if (!targetUserId) return;
-
-      try {
-        setIsLoading(true);
-        const response = await StartupService.getUserStartups(targetUserId);
-        setUserStartups(response.data);
-      } catch (error) {
-        console.error('Error fetching user startups:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserStartups();
-  }, [targetUserId]);
-
-  const handleSaveProfile = (data: ProfileData) => {
-    setProfileData(data);
-    // TODO: Call API to update profile
-    console.log('Saving profile:', data);
-  };
-
-  const handleVisibilityChange = (ideaId: number, isPublic: boolean) => {
-    console.log(`Idea ${ideaId} visibility changed to:`, isPublic ? 'Public' : 'Private');
-    // TODO: Call API to update visibility
-  };
-
+  
   return (
     <Layout>
       <div className="min-h-screen bg-gray-50">
