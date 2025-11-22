@@ -1,5 +1,5 @@
 import { Share2, Users } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import unknownAvatar from "../assets/unknown_avatar.jpg";
 import CreatePostModal, { type CreatePostPayload } from '../components/CreatePostModal';
@@ -18,6 +18,8 @@ import showErrorNotification from '../Toast/NotificationError';
 import showSuccessNotification from '../Toast/NotificationSuccess';
 import type { PointResponse } from '../types/GeminiType';
 import type { CreateStartUpDto, StartUpDto, UserSuggestionDto } from '../types/StartupType';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
 
 export default function VietStartLayout() {
   const [searchParams] = useSearchParams();
@@ -35,6 +37,8 @@ export default function VietStartLayout() {
 
   const observerTarget = useRef<HTMLDivElement>(null);
   const pageSize = 10;
+
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const fetchStartups = async (pageNumber: number, isInitial: boolean = false) => {
     if (isLoading || (!hasMore && !isInitial)) return;
@@ -156,11 +160,7 @@ export default function VietStartLayout() {
   };
 
   const handleSelectMember = (member: UserSuggestionDto) => {
-    console.log('Selected member:', member);
-    showSuccessNotification(
-      'Đã chọn thành viên',
-      `Bạn đã chọn ${member.fullName}`
-    );
+    
     // TODO: Add logic to invite member
   };  
 
@@ -186,7 +186,7 @@ export default function VietStartLayout() {
             {/* Post Creation */}
             <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-4 sm:mb-6">
               <div className="flex items-start space-x-2 sm:space-x-3">
-                <img src={unknownAvatar} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0" alt="Avatar" />
+                <img src={currentUser?.avatar || unknownAvatar} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0" alt="Avatar" />
                 <div className="flex-1 min-w-0">
                   <button
                     onClick={() => setShowCreateModal(true)}

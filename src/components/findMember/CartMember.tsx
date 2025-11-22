@@ -1,4 +1,5 @@
 import { Avatar, Badge, Card, Group, Stack, Text, Title, Box } from '@mantine/core';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Target, User } from 'lucide-react';
 import type { UserSuggestionDto } from '../../types/StartupType';
 
@@ -42,147 +43,240 @@ export default function CartMember({ member, swipeDirection }: CartMemberProps) 
         }
     };
 
+    const cardVariants = {
+        enter: (direction: 'left' | 'right' | null) => ({
+            x: direction === 'left' ? -100 : direction === 'right' ? 100 : 0,
+            opacity: 0,
+            scale: 0.8,
+            rotateY: direction === 'left' ? -20 : direction === 'right' ? 20 : 0,
+        }),
+        center: {
+            x: 0,
+            opacity: 1,
+            scale: 1,
+            rotateY: 0,
+        },
+        exit: (direction: 'left' | 'right' | null) => ({
+            x: direction === 'left' ? -300 : direction === 'right' ? 300 : 0,
+            opacity: 0,
+            scale: 0.8,
+            rotateY: direction === 'left' ? -30 : direction === 'right' ? 30 : 0,
+        })
+    };
+
     return (
-        <Card
-            shadow="xl"
-            padding={0}
-            radius="lg"
-            withBorder
-            w="100%"
-            maw={450}
-            style={{
-                transition: 'all 0.3s',
-                transform: swipeDirection === 'left' 
-                    ? 'translateX(-100%)' 
-                    : swipeDirection === 'right' 
-                    ? 'translateX(100%)' 
-                    : 'translateX(0)',
-                opacity: swipeDirection ? 0 : 1,
-                overflow: 'hidden',
-                position: 'relative'
+        <motion.div
+            custom={swipeDirection}
+            variants={cardVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+                duration: 0.5,
+                ease: [0.4, 0, 0.2, 1],
             }}
+            style={{ width: '100%', maxWidth: '450px' }}
         >
-            {/* Match Score Badge - Top Right */}
-            <Badge
-                size="lg"
-                radius="md"
-                color={getMatchScoreColor(member.matchScore)}
-                leftSection={<Target size={16} />}
+            <Card
+                shadow="xl"
+                padding={0}
+                radius="lg"
+                withBorder
+                w="100%"
                 style={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    zIndex: 10,
-                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    overflow: 'hidden',
+                    position: 'relative'
                 }}
             >
-                {member.matchScore.toFixed(1)}% Match
-            </Badge>
-
-            {/* Background behind avatar - top half */}
-            <Box
-                style={{
-                    background: 'linear-gradient(135deg, #f2dc1d 0%, #e6c91a 100%)',
-                    height: '100px',
-                    width: '100%',
-                    position: 'absolute',
-                }}
-            />
-            <div className='min-h-[50px]'></div>
-
-            <Stack gap="md" px="xl"  style={{ minHeight: '550px' }}>
-                {/* Avatar */}
-                <Box pos="relative" style={{ alignSelf: 'flex-start' }}>
-                    <Avatar
-                        src={member.avatar}
-                        size={100}
-                        radius="xl"
-                        alt={member.fullName}
-                        pos="relative"
+                {/* Match Score Badge - Top Right */}
+                <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                >
+                    <Badge
+                        size="lg"
+                        radius="md"
+                        color={getMatchScoreColor(member.matchScore)}
+                        leftSection={<Target size={16} />}
                         style={{
-                            borderRadius: '50%',
-                            border: '4px solid white',
-                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                            backgroundColor: '#f2dc1d'
+                            position: 'absolute',
+                            top: 16,
+                            right: 16,
+                            zIndex: 10,
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                         }}
                     >
-                        <User size={50} color="white" />
-                    </Avatar>
-                </Box>
+                        {member.matchScore.toFixed(1)}% Match
+                    </Badge>
+                </motion.div>
 
-                {/* Name */}
-                <Title order={3} style={{ marginTop: '-8px' }}>{member.fullName}</Title>
+                {/* Background behind avatar - top half */}
+                <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.4 }}
+                    style={{ transformOrigin: 'left' }}
+                >
+                    <Box
+                        style={{
+                            background: 'linear-gradient(135deg, #f2dc1d 0%, #e6c91a 100%)',
+                            height: '100px',
+                            width: '100%',
+                            position: 'absolute',
+                        }}
+                    />
+                </motion.div>
+                <div className='min-h-[50px]'></div>
 
-                {/* Bio */}
-                {member.bio && (
-                    <Text size="sm" c="dimmed" lineClamp={3} lh={1.6}>
-                        {member.bio}
-                    </Text>
-                )}
+                <Stack gap="md" px="xl" style={{ minHeight: '550px' }}>
+                    {/* Avatar */}
+                    <motion.div
+                        initial={{ scale: 0, y: -50 }}
+                        animate={{ scale: 1, y: 0 }}
+                        transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                    >
+                        <Box pos="relative" style={{ alignSelf: 'flex-start' }}>
+                            <Avatar
+                                src={member.avatar}
+                                size={100}
+                                radius="xl"
+                                alt={member.fullName}
+                                pos="relative"
+                                style={{
+                                    borderRadius: '50%',
+                                    border: '4px solid white',
+                                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                                    backgroundColor: '#f2dc1d'
+                                }}
+                            >
+                                <User size={50} color="white" />
+                            </Avatar>
+                        </Box>
+                    </motion.div>
 
-                {/* Skills */}
-                {member.skills && parseSkills(member.skills).length > 0 && (
-                    <Stack gap={8} w="100%">
-                        <Text size="sm" fw={600} c="dimmed" >Kỹ năng</Text>
-                        <Group gap={8}>
-                            {parseSkills(member.skills).slice(0, 6).map((skill, index) => (
-                                <Badge
-                                    key={index}
-                                    variant="light"
-                                    color="blue"
-                                    size="lg"
-                                    radius="md"
-                                    style={{ textTransform: 'none' }}
-                                >
-                                    {skill}
-                                </Badge>
-                            ))}
-                        </Group>
-                    </Stack>
-                )}
+                    {/* Name */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        <Title order={3} style={{ marginTop: '-8px' }}>{member.fullName}</Title>
+                    </motion.div>
 
-                {/* Roles */}
-                {member.rolesInStartup && parseRoles(member.rolesInStartup).length > 0 && (
-                    <Stack gap={8} w="100%">
-                        <Text size="sm" fw={600} c="dimmed">Vai trò mong muốn</Text>
-                        <Group gap={8}>
-                            {parseRoles(member.rolesInStartup).map((role, index) => (
-                                <Badge
-                                    key={index}
-                                    variant="light"
-                                    color="grape"
-                                    size="lg"
-                                    radius="md"
-                                    style={{ textTransform: 'none' }}
-                                >
-                                    {role}
-                                </Badge>
-                            ))}
-                        </Group>
-                    </Stack>
-                )}
+                    {/* Bio */}
+                    {member.bio && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                        >
+                            <Text size="sm" c="dimmed" lineClamp={3} lh={1.6}>
+                                {member.bio}
+                            </Text>
+                        </motion.div>
+                    )}
 
-                {/* Category Invests */}
-                {member.categoryInvests && parseCategories(member.categoryInvests).length > 0 && (
-                    <Stack gap={8} w="100%">
-                        <Text size="sm" fw={600} c="dimmed">Lĩnh vực đầu tư</Text>
-                        <Group gap={8}>
-                            {parseCategories(member.categoryInvests).map((category, index) => (
-                                <Badge
-                                    key={index}
-                                    variant="light"
-                                    color="teal"
-                                    size="lg"
-                                    radius="md"
-                                    style={{ textTransform: 'none' }}
-                                >
-                                    {category}
-                                </Badge>
-                            ))}
-                        </Group>
-                    </Stack>
-                )}
-            </Stack>
-        </Card>
+                    {/* Skills */}
+                    {member.skills && parseSkills(member.skills).length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            <Stack gap={8} w="100%">
+                                <Text size="sm" fw={600} c="dimmed" >Kỹ năng</Text>
+                                <Group gap={8}>
+                                    {parseSkills(member.skills).slice(0, 6).map((skill, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ delay: 0.5 + index * 0.05 }}
+                                        >
+                                            <Badge
+                                                variant="light"
+                                                color="blue"
+                                                size="lg"
+                                                radius="md"
+                                                style={{ textTransform: 'none' }}
+                                            >
+                                                {skill}
+                                            </Badge>
+                                        </motion.div>
+                                    ))}
+                                </Group>
+                            </Stack>
+                        </motion.div>
+                    )}
+
+                    {/* Roles */}
+                    {member.rolesInStartup && parseRoles(member.rolesInStartup).length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                        >
+                            <Stack gap={8} w="100%">
+                                <Text size="sm" fw={600} c="dimmed">Vai trò mong muốn</Text>
+                                <Group gap={8}>
+                                    {parseRoles(member.rolesInStartup).map((role, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ delay: 0.6 + index * 0.05 }}
+                                        >
+                                            <Badge
+                                                variant="light"
+                                                color="grape"
+                                                size="lg"
+                                                radius="md"
+                                                style={{ textTransform: 'none' }}
+                                            >
+                                                {role}
+                                            </Badge>
+                                        </motion.div>
+                                    ))}
+                                </Group>
+                            </Stack>
+                        </motion.div>
+                    )}
+
+                    {/* Category Invests */}
+                    {member.categoryInvests && parseCategories(member.categoryInvests).length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.7 }}
+                        >
+                            <Stack gap={8} w="100%">
+                                <Text size="sm" fw={600} c="dimmed">Lĩnh vực đầu tư</Text>
+                                <Group gap={8}>
+                                    {parseCategories(member.categoryInvests).map((category, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ delay: 0.7 + index * 0.05 }}
+                                        >
+                                            <Badge
+                                                variant="light"
+                                                color="teal"
+                                                size="lg"
+                                                radius="md"
+                                                style={{ textTransform: 'none' }}
+                                            >
+                                                {category}
+                                            </Badge>
+                                        </motion.div>
+                                    ))}
+                                </Group>
+                            </Stack>
+                        </motion.div>
+                    )}
+                </Stack>
+            </Card>
+        </motion.div>
     );
 }
