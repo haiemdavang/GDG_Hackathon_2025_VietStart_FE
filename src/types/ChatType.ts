@@ -30,3 +30,17 @@ export interface ChatMember {
   role: string;
   joinedAt: Date;
 }
+
+export interface PrivateChatRoom {
+  id: string;
+  participants: string[];
+  createdAt: Date;
+  lastMessage?: string;
+  lastMessageTime?: Date;
+  unreadCount?: number;
+  invitationId?: string;
+  invitationStatus?: 'Pending' | 'Dealing' | 'Success' | 'Rejected';
+  startupId?: number;
+  startupName?: string;
+  startupOwnerId?: string;
+}

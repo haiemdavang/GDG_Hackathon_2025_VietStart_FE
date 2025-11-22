@@ -5,7 +5,6 @@ import {
   orderBy,
   query,
   where,
-  Timestamp,
   updateDoc,
   doc,
   getDocs,
@@ -27,31 +26,102 @@ export const ChatService = {
     startupName: string,
     members: string[]
   ): Promise<string> => {
+    console.log('getOrCreateChatRoom called:', { startupId, startupName, members });
+    
+    if (!startupName || startupName.trim() === '') {
+      throw new Error('startupName không được để trống');
+    }
+    
     const roomId = `startup_${startupId}`;
     const roomRef = doc(db, 'chatRooms', roomId);
     const roomDoc = await getDoc(roomRef);
 
     if (!roomDoc.exists()) {
+      // Khi tạo mới: yêu cầu phải có ít nhất 1 member
+      if (!members || members.length === 0) {
+        throw new Error('members array không được rỗng khi tạo chat room mới');
+      }
+      
+      console.log('Creating new chat room:', roomId, 'with members:', members);
+      const chatRoomData = {
+        startupId,
+        startupName: startupName.trim(),
+        members: members,
+        createdAt: serverTimestamp(),
+        lastMessage: '',
+        lastMessageTime: serverTimestamp(),
+        unreadCount: 0
+      };
+      console.log('Chat room data to create:', chatRoomData);
+      await setDoc(roomRef, chatRoomData);
+      console.log('Chat room created successfully');
+    } else {
+      console.log('Chat room already exists');
+      // Nếu room đã tồn tại và có members mới, cập nhật
+      if (members && members.length > 0) {
+        const currentMembers = roomDoc.data().members || [];
+        const newMembers = [...new Set([...currentMembers, ...members])];
+        
+        if (newMembers.length !== currentMembers.length) {
+          await updateDoc(roomRef, { members: newMembers });
+          console.log('Members updated:', newMembers);
+        } else {
+          console.log('No new members to add');
+        }
+      } else {
+        console.log('No members provided, room already exists, skipping member update');
+      }
+    }
+
+    return roomId;
+  },
+
+  /**
+   * Thêm thành viên vào chat room đã tồn tại
+   * Nếu chat room chưa tồn tại, tự động tạo mới với owner
+   */
+  addMemberToRoom: async (
+    startupId: number,
+    userId: string,
+    startupName?: string,
+    ownerId?: string
+  ): Promise<void> => {
+    console.log('addMemberToRoom called:', { startupId, userId, startupName, ownerId });
+    
+    const roomId = `startup_${startupId}`;
+    const roomRef = doc(db, 'chatRooms', roomId);
+    const roomDoc = await getDoc(roomRef);
+
+    if (!roomDoc.exists()) {
+      console.warn('Chat room does not exist, creating it now...');
+      // Nếu room chưa tồn tại, tạo mới với owner và member
+      const members = ownerId ? [ownerId, userId] : [userId];
+      const name = startupName || `Startup ${startupId}`;
+      
       await setDoc(roomRef, {
         startupId,
-        startupName,
-        members,
+        startupName: name,
+        members: [...new Set(members)], // Remove duplicates
         createdAt: serverTimestamp(),
         lastMessage: '',
         lastMessageTime: serverTimestamp(),
         unreadCount: 0
       });
-    } else {
-      // Cập nhật members nếu có thay đổi
-      const currentMembers = roomDoc.data().members || [];
-      const newMembers = [...new Set([...currentMembers, ...members])];
-      
-      if (newMembers.length !== currentMembers.length) {
-        await updateDoc(roomRef, { members: newMembers });
-      }
+      console.log('Chat room created with members:', members);
+      return;
     }
 
-    return roomId;
+    const currentMembers = roomDoc.data().members || [];
+    
+    // Chỉ thêm nếu chưa có trong danh sách
+    if (!currentMembers.includes(userId)) {
+      await updateDoc(roomRef, {
+        members: [...currentMembers, userId]
+      });
+      console.log('Member added to existing room:', userId);
+    } else {
+      console.log('Member already in room:', userId);
+    }
   },
 
   /**
@@ -168,6 +238,26 @@ export const ChatService = {
 
       callback(messages);
     });
+  },
+
+  /**
+   * Lấy thông tin chat room
+   */
+  getChatRoomInfo: async (roomId: string): Promise<ChatRoom | null> => {
+    const roomRef = doc(db, 'chatRooms', roomId);
+    const roomDoc = await getDoc(roomRef);
+    
+    if (!roomDoc.exists()) {
+      return null;
+    }
+    
+    const data = roomDoc.data();
+    return {
+      id: roomDoc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      lastMessageTime: data.lastMessageTime?.toDate()
+    } as ChatRoom;
   },
 
   /**

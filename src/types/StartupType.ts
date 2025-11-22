@@ -123,8 +123,8 @@ export interface RecalculateEmbeddingsResponse {
   hasTeamEmbedding: boolean;
 }
 
+// DTO để gửi lời mời chiêu mộ - backend tự động set status = Pending
 export interface CreateTeamStartUpDtoType {
   startUpId: number;
   userId: string;
-  status?: string; 
 }
