@@ -132,6 +132,45 @@ export const GeminiService = {
             throw error;
         }
     },
+
+    checkContentPolicy: async (content: string): Promise<{success: boolean, message: string}> => {
+        try {
+            const response = await AxiosService.post<{success: boolean, message: string}>(
+                '/api/Gemini/CheckInput',
+                JSON.stringify(content),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+        
+            return {
+                success: true,
+                message: response.data.message || 'Nội dung hợp lệ'
+            };
+        } catch (error: any) {
+            if (error.response?.status === 400) {
+                const errorData = error.response.data;
+                // Nếu là object với success = false và có message, đây là vi phạm
+                if (errorData?.message) {
+                    return {
+                        success: false,
+                        message: errorData.message
+                    };
+                }
+                return {
+                    success: false,
+                    message: 'Nội dung không hợp lệ'
+                };
+            }
+            if (error.response?.status === 503) {
+                throw new Error('Dịch vụ AI tạm thời quá tải, vui lòng thử lại');
+            }
+            throw error;
+        }
+    }
 };
 
 export default GeminiService;

@@ -51,6 +51,8 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePos
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [isChecked, setIsChecked] = useState(false);
+  const [checkMessage, setCheckMessage] = useState('');
 
   // Fetch categories on mount
   useEffect(() => {
@@ -76,10 +78,38 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePos
       setVisibility('public');
       setHashtags('');
       setAiAssist(true);
+      setIsChecked(false);
+      setCheckMessage('');
     }
   }, [isOpen]);
 
   const disabled = useMemo(() => !content.trim(), [content]);
+
+  const handleCheckContent = async () => {
+    if (disabled || isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      const result = await GeminiService.checkContentPolicy(content.trim());
+      
+      setCheckMessage(result.message);
+      console.log('Check result:', result);
+
+      if (result.success) {
+        showSuccessNotification('Kiểm tra thành công', result.message);
+        setIsChecked(true);
+      } else {
+        showErrorNotification('Nội dung vi phạm', result.message);
+      }
+    } catch (error: any) {
+      showErrorNotification(
+        'Lỗi kiểm tra',
+        error.message || 'Không thể kiểm tra nội dung. Vui lòng thử lại!'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (disabled || isSubmitting) return;
@@ -289,21 +319,28 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePos
 
       {/* Fixed Footer */}
       <Group justify="space-between" p="lg" style={{ borderTop: '1px solid #e9ecef', flexShrink: 0 }}>
-        <Text size="xs" c="dimmed" style={{ flex: 1 }}>
-          {aiAssist
-            ? 'AI sẽ phân tích và đánh giá ý tưởng của bạn'
-            : 'Bài viết của bạn sẽ tuân theo quy tắc cộng đồng VietStart'
-          }
-        </Text>
+        <div style={{ flex: 1 }}>
+          <Text size="xs" c="dimmed">
+            {aiAssist
+              ? 'AI sẽ phân tích và đánh giá ý tưởng của bạn'
+              : 'Bài viết của bạn sẽ tuân theo quy tắc cộng đồng VietStart'
+            }
+          </Text>
+          {checkMessage && (
+            <Text size="xs" c={isChecked && checkMessage.includes('hợp lệ') ? 'green' : 'red'} mt={4}>
+              {checkMessage}
+            </Text>
+          )}
+        </div>
         <Button
-          onClick={handleSubmit}
+          onClick={isChecked ? handleSubmit : handleCheckContent}
           disabled={disabled || isSubmitting}
           radius="xl"
           size="md"
           color="goldenDream"
           leftSection={isSubmitting ? <Loader size="xs" color="white" /> : null}
         >
-          {isSubmitting ? 'Đang xử lý...' : 'Bước tiếp theo'}
+          {isSubmitting ? 'Đang xử lý...' : (isChecked ? 'Phân tích' : 'Kiểm tra')}
         </Button>
       </Group>
     </Modal>
