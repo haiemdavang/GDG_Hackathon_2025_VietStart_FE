@@ -38,10 +38,10 @@ export function SignUp() {
 
   const form = useForm<SignUpFormValues>({
     initialValues: {
-      fullName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      fullName: 'Nguyen Nhat Khanh',
+      email: 'abc@gmail.com',
+      password: 'Abc123456@',
+      confirmPassword: 'Abc123456@',
       skills: [],
       rolesInStartup: [],
       categoryInvests: [],
